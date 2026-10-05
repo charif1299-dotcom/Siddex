@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ผู้พิทักษ์สิทธิเด็ก</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0F2438; --navy-panel:#173350; --paper:#EFF3EA; --ink:#1B2A26;
+    --gold:#E7A93D; --gold-dim:#C98F2A; --green:#4C9A6A; --red:#D9553A;
+    --c-survival:#D9553A; --c-protection:#2E7FB8; --c-development:#4C9A6A; --c-participation:#E7A93D;
+    --shadow: 0 18px 40px rgba(6,14,24,.45);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(47,167,155,.18), transparent 55%),
+      radial-gradient(ellipse at 90% 110%, rgba(231,169,61,.12), transparent 50%),
+      linear-gradient(180deg, var(--navy-deep), #0A1826);
+    font-family:'Sarabun', sans-serif; color:var(--paper);
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .app{
+    width:100%; max-width:720px; min-height:760px;
+    background:var(--navy-panel); border-radius:26px; box-shadow:var(--shadow);
+    overflow:hidden; position:relative; border:1px solid rgba(255,255,255,.06);
+    display:flex; flex-direction:column;
+  }
+  .flash-overlay{ position:absolute; inset:0; background:var(--red); opacity:0; pointer-events:none; z-index:60; transition:opacity .12s ease; }
+  .flash-overlay.show{ opacity:.28; }
+
+  .topbar{ display:flex; flex-direction:column; gap:10px; padding:16px 22px; background:linear-gradient(180deg, rgba(255,255,255,.04), transparent); border-bottom:1px solid rgba(255,255,255,.06); position:relative; z-index:2; }
+  .topbar-row{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  .brand{ font-family:'Mitr',sans-serif; font-size:15px; letter-spacing:.02em; color:var(--gold); display:flex; align-items:center; gap:8px; }
+  .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--gold);}
+  .ch-badge{ font-family:'Mitr',sans-serif; font-size:12px; padding:4px 12px; border-radius:999px; background:rgba(231,169,61,.16); color:var(--gold); }
+  .icon-btn{ width:30px; height:30px; border-radius:50%; border:none; background:rgba(255,255,255,.08); color:var(--paper); font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s ease, transform .08s ease; }
+  .icon-btn:hover{ background:rgba(255,255,255,.16); }
+  .icon-btn:active{ transform:scale(.92); }
+  .icon-btn.muted{ opacity:.5; }
+  .timeline{ display:flex; align-items:center; gap:6px; }
+  .timeline .seg{ flex:1; height:6px; border-radius:999px; background:rgba(255,255,255,.1); position:relative; overflow:hidden; }
+  .timeline .seg i{ display:block; height:100%; width:0%; border-radius:999px; background:var(--seg-color, var(--gold)); transition:width .4s ease; }
+  .timeline .seg.done i{ width:100%; }
+  .timeline .seg.active i{ width:55%; }
+  .chapter-label{ font-size:11.5px; color:rgba(239,243,234,.5); }
+
+  .screen{ flex:1; display:none; flex-direction:column; padding:22px 26px 26px; animation:fadeIn .35s ease; position:relative; z-index:2; }
+  .screen.active{display:flex;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  h1{ font-family:'Mitr',sans-serif; font-size:25px; margin:0 0 6px; color:#fff; line-height:1.3; }
+  h2{ font-family:'Mitr',sans-serif; font-size:19px; margin:0 0 10px; color:#fff; }
+  p{ line-height:1.75; font-size:15.5px; color:rgba(239,243,234,.88); margin:0 0 12px;}
+  .lede{ color:rgba(239,243,234,.65); font-size:14.5px; margin-bottom:18px;}
+
+  .rights-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:6px 0 20px; }
+  .right-card{ background:rgba(255,255,255,.04); border-left:4px solid var(--accent); border-radius:14px; padding:12px 14px; }
+  .right-card b{ font-family:'Mitr',sans-serif; font-size:14px; display:block; margin-bottom:3px; color:#fff;}
+  .right-card span{ font-size:13px; color:rgba(239,243,234,.65); }
+
+  .knowledge-card{ background:rgba(255,255,255,.04); border-left:4px solid var(--accent); border-radius:14px; padding:14px 16px; margin-bottom:12px; }
+  .knowledge-card b{ font-family:'Mitr',sans-serif; font-size:14.5px; display:block; margin-bottom:5px; color:#fff; }
+  .knowledge-card span{ font-size:13.5px; line-height:1.65; color:rgba(239,243,234,.75); display:block; }
+
+  .panel{ border-radius:18px; box-shadow:0 10px 22px rgba(0,0,0,.28); }
+
+  .btn{ font-family:'Mitr',sans-serif; font-size:15px; border:none; border-radius:14px; padding:14px 20px; cursor:pointer; background:var(--gold); color:#20160A; font-weight:600; box-shadow:0 5px 0 var(--gold-dim); transition:transform .08s ease, filter .15s ease; }
+  .btn:hover{ filter:brightness(1.06); }
+  .btn:active{ transform:translateY(4px); box-shadow:0 1px 0 var(--gold-dim); }
+  .btn.secondary{ background:rgba(255,255,255,.08); color:var(--paper); box-shadow:0 5px 0 rgba(0,0,0,.35); }
+  .btn.secondary:active{ box-shadow:0 1px 0 rgba(0,0,0,.35); }
+  .spacer{flex:1;}
+  .button-col{ display:flex; flex-direction:column; gap:10px; }
+
+  .scene-tag{ display:inline-flex; align-items:center; gap:6px; font-family:'Mitr',sans-serif; font-size:12px; padding:5px 13px; border-radius:999px; background:var(--accent); color:#0F2438; font-weight:600; margin-bottom:10px; width:fit-content; }
+  .transition-line{ font-family:'Mitr',sans-serif; font-size:13px; color:var(--gold); margin:-2px 0 12px; letter-spacing:.02em; }
+
+  .scene-stage{ position:relative; height:150px; overflow:hidden; margin-bottom:16px; }
+  .sky{ position:absolute; inset:0; }
+  .ground{ position:absolute; left:0; right:0; bottom:0; height:26px; border-radius:50% 50% 0 0 / 14px 14px 0 0; }
+  .decor{ position:absolute; inset:0; pointer-events:none; }
+  .prop{ position:absolute; bottom:22px; left:45%; opacity:.92; filter:drop-shadow(0 3px 3px rgba(0,0,0,.25)); pointer-events:none; }
+  .decor-sun{ position:absolute; top:14px; right:22px; width:26px; height:26px; border-radius:50%; background:#FCD26B; box-shadow:0 0 20px 8px rgba(255,214,120,.5); }
+  .decor-moon{ position:absolute; top:14px; right:26px; width:20px; height:20px; border-radius:50%; background:#F3E7C9; box-shadow:-6px 0 0 0 #4A3B6B inset; }
+  .decor-star{ position:absolute; width:5px; height:5px; border-radius:50%; background:#FFF3C9; animation:twinkle 1.8s ease-in-out infinite; }
+  .decor-window{ position:absolute; top:14px; right:18px; width:56px; height:36px; border-radius:8px; background:rgba(255,255,255,.18); box-shadow:inset 0 0 0 3px rgba(255,255,255,.35); }
+  @keyframes twinkle{ 0%,100%{opacity:.25;} 50%{opacity:1;} }
+
+  .charWrap{ position:absolute; bottom:18px; }
+  .charWrap.protagonist{ left:9%; }
+  .charWrap.npc{ right:9%; }
+  .char-svg{ display:block; overflow:visible; }
+  .char-head{ transition: transform .3s ease; }
+  .char-arm{ transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+  .char-root.pop{ animation: popPose .3s ease; }
+  @keyframes popPose{ 0%{transform:scale(1);} 35%{transform:scale(1.1);} 100%{transform:scale(1);} }
+  @keyframes bobY{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .anim-bob{ animation: bobY 1.8s ease-in-out infinite; }
+  .anim-tilt{ animation: bobY 2.6s ease-in-out infinite; }
+  .anim-droop{ animation: bobY 3.2s ease-in-out infinite; }
+  @keyframes cheerBounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-11px) scale(1.05)}}
+  .anim-cheer{ animation: cheerBounce .8s ease-in-out infinite; }
+  @keyframes shiverX{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
+  .anim-shiver{ animation: shiverX .32s ease-in-out infinite; }
+  @keyframes alertShake{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-3px) rotate(-2deg)}75%{transform:translateX(3px) rotate(2deg)}}
+  .anim-alert{ animation: alertShake .4s ease-in-out 3; }
+
+  .sparkle{ position:absolute; width:6px; height:6px; border-radius:50%; top:14%; left:50%; animation: sparkleFly .6s ease-out forwards; }
+  @keyframes sparkleFly{ 0%{ transform:translate(-50%,0) scale(1); opacity:1;} 100%{ transform:translate(calc(-50% + var(--dx)), var(--dy)) scale(0); opacity:0;} }
+  .confetti{ position:absolute; width:7px; height:7px; border-radius:2px; top:0; animation confettiFall 1s ease-in forwards; }
+  @keyframes confettiFall{ 0%{ transform:translateY(-6px) rotate(0deg); opacity:1;} 100%{ transform:translateY(90px) rotate(260deg); opacity:0;} }
+
+  .story-box{ background:var(--paper); color:var(--ink); padding:18px 20px 8px; margin-bottom:16px; }
+  .story-box p{ color:var(--ink); font-size:15.5px; }
+  .choices{ display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+  .choice-btn{ text-align:left; background:rgba(255,255,255,.05); border:none; color:var(--paper); border-radius:14px; font-family:'Sarabun',sans-serif; font-size:14.5px; cursor:pointer; padding:13px 16px; line-height:1.5; box-shadow:0 4px 0 rgba(0,0,0,.35); transition:transform .08s ease, background .15s ease; }
+  .choice-btn:hover{ background:rgba(231,169,61,.12); }
+  .choice-btn:active{ transform:translateY(3px); box-shadow:0 1px 0 rgba(0,0,0,.35); }
+  .choice-letter{ display:inline-flex; width:22px;height:22px; border-radius:50%; background:rgba(255,255,255,.12); align-items:center;justify-content:center; font-family:'Mitr',sans-serif; font-size:12px; margin-right:10px; flex-shrink:0; }
+
+  .conseq-box{ background:rgba(217,85,58,.12); padding:18px 20px; margin-bottom:16px; }
+  .conseq-box .label{ font-family:'Mitr',sans-serif; color:var(--red); font-size:13px; font-weight:600; margin-bottom:8px; display:block;}
+  .good-box{ position:relative; background:rgba(76,154,106,.14); padding:18px 20px; margin-bottom:12px; overflow:visible; }
+  .good-box .label{ font-family:'Mitr',sans-serif; color:var(--green); font-size:13px; font-weight:600; margin-bottom:2px; display:block;}
+  .ending-tag{ display:inline-block; font-family:'Mitr',sans-serif; font-size:11px; padding:3px 10px; border-radius:999px; background:rgba(255,255,255,.12); color:rgba(239,243,234,.8); margin-bottom:10px; }
+  .next-hint{ font-size:14px; color:rgba(239,243,234,.6); margin-bottom:18px; }
+
+  .cert{ background:var(--paper); color:var(--ink); padding:26px 24px; text-align:center; }
+  .cert .seal{ width:64px;height:64px; border-radius:50%; background:var(--gold); display:flex;align-items:center;justify-content:center; margin:0 auto 14px; font-size:28px; box-shadow:0 6px 14px rgba(231,169,61,.4); }
+  .cert h2{ color:var(--ink); font-size:20px; }
+  .cert .name{ font-family:'Mitr',sans-serif; font-size:17px; color:var(--gold-dim); margin:10px 0 16px; }
+  .cert-rights{ display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin:14px 0 4px; }
+  .cert-rights span{ font-size:11.5px; font-family:'Mitr',sans-serif; padding:6px 11px; border-radius:999px; color:#fff; }
+
+  .score-summary{ background:rgba(255,255,255,.05); padding:18px 20px; margin-top:14px; }
+  .score-total{ font-family:'Mitr',sans-serif; font-size:18px; color:var(--gold); margin-bottom:4px; }
+  .score-tier{ font-size:13.5px; color:rgba(239,243,234,.75); margin-bottom:12px; }
+  .score-breakdown{ display:flex; flex-direction:column; gap:6px; }
+  .score-row{ display:flex; justify-content:space-between; font-size:13.5px; color:rgba(239,243,234,.8); border-bottom:1px dashed rgba(255,255,255,.1); padding-bottom:6px; }
+  .score-row b{ color:var(--gold); font-family:'Mitr',sans-serif; font-weight:600; }
+  footer.note{ text-align:center; font-size:12px; color:rgba(239,243,234,.35); padding:14px; letter-spacing:.02em; position:relative; z-index:2; }
+
+  /* CUSTOMIZE SCREEN */
+  .customize-group{ margin-bottom:16px; }
+  .customize-label{ font-family:'Mitr',sans-serif; font-size:13px; color:rgba(239,243,234,.7); display:block; margin-bottom:8px; }
+  .swatch-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .swatch{ width:34px; height:34px; border-radius:50%; cursor:pointer; border:3px solid transparent; transition:transform .12s ease, border-color .12s ease; }
+  .swatch:hover{ transform:scale(1.08); }
+  .swatch.active{ border-color:#fff; }
+  .chip-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .chip-btn{ font-family:'Mitr',sans-serif; font-size:13px; padding:9px 16px; border-radius:999px; border:none; background:rgba(255,255,255,.08); color:var(--paper); cursor:pointer; }
+  .chip-btn.active{ background:var(--gold); color:#20160A; }
+  .name-input-group{ margin:4px 0 16px; }
+  .name-input{
+    width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid rgba(255,255,255,.15);
+    background:rgba(255,255,255,.06); color:var(--paper); font-family:'Sarabun',sans-serif; font-size:15px;
+    outline:none; transition:border-color .15s ease; box-sizing:border-box;
+  }
+  .name-input:focus{ border-color: var(--gold); }
+  .name-input::placeholder{ color: rgba(239,243,234,.4); }
+  .name-input.error{ border-color: var(--red); }
+  .name-error{ display:none; color: var(--red); font-size:12.5px; margin-top:6px; }
+  @keyframes shakeInput{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .name-input.shake{ animation: shakeInput .3s ease-in-out; }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="flash-overlay" id="flashOverlay"></div>
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="brand"><span class="dot"></span>ผู้พิทักษ์สิทธิเด็ก</div>
+      <div class="ch-badge" id="chBadge">บทที่ 1</div>
+      <div class="ch-badge" id="scoreBadge" style="background:rgba(76,154,106,.18); color:#8fd6a8;">⭐ 0 คะแนน</div>
+      <button class="icon-btn" id="soundToggle" type="button" title="เปิด/ปิดเสียง">🔊</button>
+    </div>
+    <div class="timeline" id="timeline"></div>
+    <div class="chapter-label" id="chapterLabel">สัปดาห์แห่งการตัดสินใจ</div>
+  </div>
+
+  <!-- LOBBY -->
+  <div class="screen active" id="screen-lobby">
+    <h1>ยินดีต้อนรับสู่โรงเรียนบ้านสวนดี</h1>
+    <p class="lede" id="lobbyGreeting">ตัวละครของคุณพร้อมแล้ว จะเริ่มออกเดินทางเลย หรือแวะแต่งตัวอีกครั้งก่อนก็ได้</p>
+    <div id="stageSlot-lobby"></div>
+    <div class="name-input-group">
+      <label class="customize-label" for="playerNameInput">ชื่อของคุณ *</label>
+      <input type="text" id="playerNameInput" class="name-input" placeholder="พิมพ์ชื่อเล่นของคุณ..." maxlength="20" autocomplete="off">
+      <div class="name-error" id="nameError">กรุณาใส่ชื่อของคุณก่อนเริ่มเกม</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="button-col">
+      <button class="btn" onclick="attemptStartGame()">1. เริ่มเกม</button>
+      <button class="btn secondary" onclick="openCustomize()">2. แต่งตัว</button>
+    </div>
+  </div>
+
+  <!-- KNOWLEDGE (rights education, shown after pressing "เริ่มเกม") -->
+  <div class="screen" id="screen-knowledge">
+    <h1>ก่อนเริ่มภารกิจ: รู้จักสิทธิเด็ก</h1>
+    <div class="knowledge-card" style="--accent:var(--gold)">
+      <b>“สิทธิ” คืออะไร?</b>
+      <span>สิทธิ คือ สิ่งที่ทุกคนพึงมีพึงได้ตามธรรมชาติและตามกฎหมาย เป็นสิ่งที่ติดตัวมาตั้งแต่เกิด ไม่มีใครมาพรากไปได้ เช่น สิทธิที่จะมีชีวิตอยู่ สิทธิที่จะปลอดภัย หรือสิทธิที่จะได้แสดงความคิดเห็น เมื่อพูดถึง “สิทธิเด็ก” ก็หมายถึงสิ่งที่เด็กทุกคนพึงมีพึงได้ และผู้ใหญ่รอบตัวมีหน้าที่ต้องเคารพและปกป้องสิทธิเหล่านั้นไว้</span>
+    </div>
+    <div class="knowledge-card" style="--accent:#8A5FBF">
+      <b>“เด็ก” คือใคร?</b>
+      <span>“เด็ก” คือบุคคลที่มีอายุต่ำกว่า 18 ปี ซึ่งต้องได้รับการคุ้มครองสิทธิจากครอบครัว สังคม และภาครัฐ ตามอนุสัญญาว่าด้วยสิทธิเด็กแห่งสหประชาชาติ (UNCRC) สิทธิเด็กขั้นพื้นฐานแบ่งออกเป็น 4 ด้านหลัก ลองอ่านให้เข้าใจก่อนออกเดินทางนะ</span>
+    </div>
+
+    <div class="knowledge-card" style="--accent:var(--c-survival)">
+      <b>1. สิทธิที่จะมีชีวิตรอด (Right to Survival)</b>
+      <span>เด็กทุกคนมีสิทธิที่จะมีชีวิตอยู่รอด ได้รับอาหาร ที่อยู่อาศัย และการรักษาพยาบาลเมื่อเจ็บป่วย ไม่ถูกปล่อยปละละเลยจนเป็นอันตรายต่อชีวิต</span>
+    </div>
+    <div class="knowledge-card" style="--accent:var(--c-protection)">
+      <b>2. สิทธิที่จะได้รับการปกป้องคุ้มครอง (Right to Protection)</b>
+      <span>เด็กทุกคนต้องปลอดภัยจากการถูกทำร้าย การถูกล่วงละเมิด การถูกบังคับข่มขู่ การถูกกลั่นแกล้ง และภัยอันตรายต่างๆ ทั้งในชีวิตจริงและโลกออนไลน์</span>
+    </div>
+    <div class="knowledge-card" style="--accent:var(--c-development)">
+      <b>3. สิทธิที่จะได้รับการพัฒนา (Right to Development)</b>
+      <span>เด็กทุกคนมีสิทธิที่จะได้รับการศึกษา ได้เล่น ได้พักผ่อน และได้พัฒนาตัวเองอย่างเต็มศักยภาพ โดยไม่ถูกบังคับให้ทำงานหนักจนเสียโอกาสทางการเรียน</span>
+    </div>
+    <div class="knowledge-card" style="--accent:var(--c-participation)">
+      <b>4. สิทธิในการมีส่วนร่วม (Right to Participation)</b>
+      <span>เด็กทุกคนมีสิทธิที่จะแสดงความคิดเห็นในเรื่องที่ส่งผลกระทบต่อตัวเอง และมีสิทธิที่จะได้รับฟังอย่างจริงจังจากผู้ใหญ่</span>
+    </div>
+
+    <p class="lede" style="margin-top:4px;">ในภารกิจนี้ คุณจะได้เจอสถานการณ์ต่างๆ ที่เสี่ยงต่อการถูกละเมิดสิทธิของเพื่อนรอบตัว หน้าที่ของคุณคือเลือกวิธีรับมือที่จะช่วยปกป้องสิทธิเหล่านี้ไว้ให้ได้มากที่สุด</p>
+
+    <div class="spacer"></div>
+    <button class="btn" onclick="startChapter(0)">เข้าใจแล้ว เริ่มภารกิจ</button>
+  </div>
+
+  <!-- CUSTOMIZE -->
+  <div class="screen" id="screen-customize">
+    <h2>แต่งตัวละครของคุณ</h2>
+    <p class="lede">เลือกลุคที่ใช่ก่อนออกเดินทางในสัปดาห์นี้</p>
+    <div id="stageSlot-customize"></div>
+
+    <div class="customize-group">
+      <span class="customize-label">1. เพศ</span>
+      <div class="chip-row" id="genderChips"></div>
+    </div>
+
+    <div class="customize-group">
+      <span class="customize-label">2.1 เสื้อ (สี)</span>
+      <div class="swatch-row" id="shirtSwatches"></div>
+    </div>
+
+    <div class="customize-group">
+      <span class="customize-label">2.2 กางเกงขายาว / กระโปรง</span>
+      <div class="chip-row" id="bottomTypeChips"></div>
+      <div class="swatch-row" id="bottomColorSwatches" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="customize-group">
+      <span class="customize-label">3. สีผิว</span>
+      <div class="swatch-row" id="skinSwatches"></div>
+    </div>
+
+    <div class="customize-group">
+      <span class="customize-label">4. ของตกแต่ง</span>
+      <div class="chip-row">
+        <button class="chip-btn" id="glassesBtn" type="button">แว่นตา</button>
+        <button class="chip-btn" id="hatBtn" type="button">หมวก</button>
+      </div>
+    </div>
+
+    <div class="customize-group">
+      <span class="customize-label">5. ทรงผม (และสี)</span>
+      <div class="chip-row" id="hairstyleChips"></div>
+      <div class="swatch-row" id="hairSwatches" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="customize-group">
+      <span class="customize-label">6. สีรองเท้า</span>
+      <div class="swatch-row" id="shoeSwatches"></div>
+    </div>
+
+    <div class="spacer"></div>
+    <button class="btn" onclick="openLobby()">กลับไปลอบบี้</button>
+  </div>
+
+  <!-- STORY -->
+  <div class="screen" id="screen-story">
+    <div class="scene-tag" id="storyTag"></div>
+    <div class="transition-line" id="storyTransition"></div>
+    <div id="stageSlot-story"></div>
+    <div class="story-box panel" id="storyText"></div>
+    <div class="choices" id="storyChoices"></div>
+  </div>
+
+  <!-- CONSEQUENCE -->
+  <div class="screen" id="screen-conseq">
+    <div class="scene-tag" id="conseqTag"></div>
+    <div id="stageSlot-conseq"></div>
+    <div class="conseq-box panel">
+      <span class="label">ผลที่ตามมา</span>
+      <p id="conseqText"></p>
+    </div>
+    <p class="lede" id="conseqAdvice"></p>
+    <div class="spacer"></div>
+    <button class="btn" id="conseqBtn">กลับไปตัดสินใจใหม่</button>
+  </div>
+
+  <!-- END NODE -->
+  <div class="screen" id="screen-goodend">
+    <div class="scene-tag" id="goodTag"></div>
+    <div id="stageSlot-goodend"></div>
+    <div class="good-box panel" id="goodBox">
+      <span class="ending-tag" id="endingTag"></span>
+      <span class="label">จบเหตุการณ์นี้แล้ว</span>
+      <p id="goodText"></p>
+    </div>
+    <p class="next-hint" id="nextHint"></p>
+    <div class="spacer"></div>
+    <button class="btn" id="continueBtn">ไปต่อ</button>
+  </div>
+
+  <!-- CERTIFICATE -->
+  <div class="screen" id="screen-cert">
+    <div class="cert panel">
+      <div class="seal">🛡️</div>
+      <h2>ประกาศนียบัตร</h2>
+      <div class="name" id="certName">ผู้พิทักษ์สิทธิเด็ก</div>
+      <p>ตลอดหนึ่งสัปดาห์ คุณเจอเหตุการณ์ที่เสี่ยงต่อการถูกละเมิดสิทธิของเพื่อนรอบตัวหลายเรื่อง และช่วยพาทุกเหตุการณ์ไปสู่ทางออกที่ดีได้สำเร็จ ไม่ว่าจะผ่านเส้นทางไหนก็ตาม</p>
+      <div class="cert-rights">
+        <span style="background:var(--c-survival)">สิทธิที่จะมีชีวิตรอด</span>
+        <span style="background:var(--c-protection)">สิทธิที่จะได้รับการปกป้องคุ้มครอง</span>
+        <span style="background:var(--c-development)">สิทธิที่จะได้รับการพัฒนา</span>
+        <span style="background:var(--c-participation)">สิทธิในการมีส่วนร่วม</span>
+      </div>
+    </div>
+
+    <div class="score-summary panel" id="scoreSummary">
+      <div class="score-total" id="scoreTotalLine"></div>
+      <div class="score-tier" id="scoreTier"></div>
+      <div class="score-breakdown" id="scoreBreakdown"></div>
+    </div>
+
+    <div class="spacer"></div>
+    <button class="btn secondary" onclick="resetGame()">เล่นใหม่อีกครั้ง</button>
+  </div>
+
+  <footer class="note">วิชาสังคมศึกษา · หน่วยการเรียนรู้เรื่องสิทธิเด็ก · ป.5</footer>
+</div>
+
+<script>
+/* =================== SOUND ENGINE (synthesized, no audio files needed) =================== */
+let audioCtx = null;
+let soundOn = true;
+function ensureAudio(){
+  if(!audioCtx){
+    try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ audioCtx = null; }
+  }
+  if(audioCtx && audioCtx.state === 'suspended'){ audioCtx.resume(); }
+}
+function tone(freq, start, duration, type, vol){
+  if(!soundOn || !audioCtx) return;
+  const t0 = audioCtx.currentTime + start;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type || 'sine';
+  osc.frequency.setValueAtTime(freq, t0);
+  gain.gain.setValueAtTime(0, t0);
+  gain.gain.linearRampToValueAtTime(vol || 0.15, t0 + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(t0);
+  osc.stop(t0 + duration + 0.03);
+}
+function playClick(){ ensureAudio(); tone(520, 0, 0.07, 'triangle', 0.10); }
+function playGood(){ ensureAudio(); tone(659, 0, 0.12, 'sine', 0.15); tone(880, 0.09, 0.18, 'sine', 0.15); }
+function playBad(){ ensureAudio(); tone(220, 0, 0.16, 'sawtooth', 0.11); tone(165, 0.1, 0.22, 'sawtooth', 0.10); }
+function playFanfare(){
+  ensureAudio();
+  [523, 659, 784, 1046].forEach((f,i)=> tone(f, i*0.11, 0.28, 'triangle', 0.14));
+}
+document.addEventListener('click', (e)=>{
+  const t = e.target.closest('.btn, .choice-btn, .swatch, .chip-btn');
+  if(t) playClick();
+}, true);
+document.getElementById('soundToggle').onclick = () => {
+  soundOn = !soundOn;
+  ensureAudio();
+  const btn = document.getElementById('soundToggle');
+  btn.textContent = soundOn ? '🔊' : '🔇';
+  btn.classList.toggle('muted', !soundOn);
+};
+
+const ACCENTS = { survival:'var(--c-survival)', protection:'var(--c-protection)', development:'var(--c-development)', participation:'var(--c-participation)', online:'var(--c-protection)', bullying:'var(--c-protection)', abuse:'var(--c-protection)', coercion:'var(--c-protection)' };
+
+/* =================== CUTE 2D CHARACTER ENGINE =================== */
+const INK='#1B2A26';
+const DEFAULT_SKIN='#F2C79C', DEFAULT_PANTS='#395C82', DEFAULT_SHOE='#2B2118', DEFAULT_SKIRT='#E06B9A';
+const SKIN_TONES = ['#FFE3C7','#F2C79C','#D9A066','#A9704B','#7A4A2E'];
+const HAIR_COLORS = ['#2B1D14','#5C3A22','#1C1C1C','#7A4A2A','#3A2A1C','#E7A93D'];
+const SHIRT_COLORS = ['#E7A93D','#2E7FB8','#D9553A','#4C9A6A','#8A5FBF','#E06B9A'];
+const PANTS_COLORS = ['#395C82','#2B2118','#4C9A6A','#6B4A82','#3A3A42'];
+const SHOE_COLORS = ['#2B2118','#8A5A33','#C9C9C9','#D9553A','#2E7FB8'];
+const HAIRSTYLES = [ {key:'short', label:'ทรงสั้น'}, {key:'long', label:'ผมยาว'}, {key:'ponytail', label:'หางม้า'}, {key:'twintails', label:'สองหาง'} ];
+const GENDERS = [ {key:'female', label:'หญิง'}, {key:'male', label:'ชาย'} ];
+const BOTTOM_TYPES = [ {key:'pants', label:'กางเกงขายาว'}, {key:'skirt', label:'กระโปรง'} ];
+let PLAYER_PALETTE = {
+  gender:'male', hair:HAIR_COLORS[0], hairstyle:'short',
+  shirt:SHIRT_COLORS[0], bottomType:'pants', pantsColor:PANTS_COLORS[0], skirtColor:SHIRT_COLORS[5],
+  skin:SKIN_TONES[1], shoe:SHOE_COLORS[0], glasses:false, hat:false
+};
+
+const EYE_MARKUP = {
+  normal: `<circle cx="48" cy="44" r="3.4" fill="${INK}"/><circle cx="72" cy="44" r="3.4" fill="${INK}"/>`,
+  small:  `<circle cx="48" cy="45" r="2.2" fill="${INK}"/><circle cx="72" cy="45" r="2.2" fill="${INK}"/>`,
+  wide:   `<circle cx="48" cy="43" r="4.8" fill="${INK}"/><circle cx="72" cy="43" r="4.8" fill="${INK}"/>`,
+  closedHappy: `<path d="M43,45 Q48,38 53,45" stroke="${INK}" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M67,45 Q72,38 77,45" stroke="${INK}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
+};
+const MOUTH_D = {
+  smileSmall:"M50,58 Q60,64 70,58", smileBig:"M45,56 Q60,73 75,56",
+  wobble:"M53,60 Q56,56 59,60 Q62,64 65,60", flat:"M52,60 L68,60", frown:"M48,64 Q60,54 72,64"
+};
+const POSES = {
+  idle:    { eyes:'normal', mouth:'smileSmall', leftArm:8,  rightArm:-8,   bodyAnim:'anim-bob',   headTilt:0 },
+  happy:   { eyes:'closedHappy', mouth:'smileBig', leftArm:-150, rightArm:150, bodyAnim:'anim-cheer', headTilt:0 },
+  worried: { eyes:'small', mouth:'wobble', leftArm:-35, rightArm:35, bodyAnim:'anim-shiver', headTilt:0 },
+  alert:   { eyes:'wide', mouth:'o', leftArm:8, rightArm:-112, bodyAnim:'anim-alert', headTilt:-4 },
+  thinking:{ eyes:'normal', mouth:'flat', leftArm:8, rightArm:-165, bodyAnim:'anim-tilt', headTilt:-8 },
+  sad:     { eyes:'small', mouth:'frown', leftArm:18, rightArm:-18, bodyAnim:'anim-droop', headTilt:6 }
+};
+
+function hairExtraMarkup(style, hairColor, tieColor){
+  switch(style){
+    case 'long':
+      return `<path d="M24,42 Q18,78 28,102 Q34,86 34,50 Z" fill="${hairColor}"/><path d="M96,42 Q102,78 92,102 Q86,86 86,50 Z" fill="${hairColor}"/>`;
+    case 'ponytail':
+      return `<path d="M90,18 Q108,26 104,58 Q99,66 92,54 Q94,34 84,20 Z" fill="${hairColor}"/>`;
+    case 'twintails':
+      return `<path d="M24,28 Q6,34 8,58 Q13,66 20,56 Q17,38 30,30 Z" fill="${hairColor}"/><circle cx="22" cy="33" r="4.5" fill="${tieColor}"/><path d="M96,28 Q114,34 112,58 Q107,66 100,56 Q103,38 90,30 Z" fill="${hairColor}"/><circle cx="98" cy="33" r="4.5" fill="${tieColor}"/>`;
+    default:
+      return '';
+  }
+}
+function legsMarkup(palette){
+  const skin = palette.skin || DEFAULT_SKIN;
+  const shoeColor = palette.shoe || DEFAULT_SHOE;
+  if(palette.bottomType === 'skirt'){
+    const skirtColor = palette.skirtColor || DEFAULT_SKIRT;
+    return `
+      <path d="M32,118 L88,118 L100,140 L20,140 Z" fill="${skirtColor}"/>
+      <rect x="44" y="134" width="8" height="8" fill="${skin}"/>
+      <rect x="68" y="134" width="8" height="8" fill="${skin}"/>
+      <rect x="40" y="140" width="16" height="7" rx="3" fill="${shoeColor}" stroke="rgba(0,0,0,.15)" stroke-width="1"/>
+      <rect x="64" y="140" width="16" height="7" rx="3" fill="${shoeColor}" stroke="rgba(0,0,0,.15)" stroke-width="1"/>`;
+  }
+  const pantsColor = palette.pantsColor || DEFAULT_PANTS;
+  return `
+    <rect x="42" y="120" width="14" height="21" rx="6" fill="${pantsColor}"/>
+    <rect x="64" y="120" width="14" height="21" rx="6" fill="${pantsColor}"/>
+    <rect x="40" y="138" width="18" height="8" rx="3" fill="${shoeColor}" stroke="rgba(0,0,0,.15)" stroke-width="1"/>
+    <rect x="62" y="138" width="18" height="8" rx="3" fill="${shoeColor}" stroke="rgba(0,0,0,.15)" stroke-width="1"/>`;
+}
+function characterSVG(prefix, palette){
+  const style = palette.hairstyle || 'short';
+  const skin = palette.skin || DEFAULT_SKIN;
+  const hairExtra = hairExtraMarkup(style, palette.hair, palette.shirt);
+  const legs = legsMarkup(palette);
+  return `
+  <svg class="char-svg" viewBox="0 0 120 150" width="98" height="122">
+    <g class="char-root" id="${prefix}-root">
+      <g class="char-body-anim anim-bob" id="${prefix}-bodyAnim">
+        ${legs}
+        <g id="${prefix}-leftArm" class="char-arm">
+          <line x1="34" y1="82" x2="34" y2="116" stroke="${palette.shirt}" stroke-width="13" stroke-linecap="round"/>
+          <circle cx="34" cy="116" r="7" fill="${skin}"/>
+        </g>
+        <g id="${prefix}-rightArm" class="char-arm">
+          <line x1="86" y1="82" x2="86" y2="116" stroke="${palette.shirt}" stroke-width="13" stroke-linecap="round"/>
+          <circle cx="86" cy="116" r="7" fill="${skin}"/>
+        </g>
+        <rect x="48" y="62" width="24" height="18" rx="8" fill="${skin}"/>
+        <rect x="30" y="70" width="60" height="58" rx="22" fill="${palette.shirt}"/>
+        <g id="${prefix}-head" class="char-head">
+          <circle cx="60" cy="46" r="34" fill="${skin}"/>
+          <path d="M26,44 Q26,10 60,8 Q94,10 94,44 Q80,24 60,24 Q40,24 26,44 Z" fill="${palette.hair}"/>
+          ${hairExtra}
+          <g style="display:${palette.hat ? 'block':'none'}">
+            <path d="M22,38 Q24,10 60,8 Q96,10 98,38 Q80,26 60,26 Q40,26 22,38 Z" fill="${palette.shirt}"/>
+            <rect x="12" y="33" width="30" height="7" rx="3" fill="${palette.shirt}"/>
+          </g>
+          <path d="M44,37 Q48,34 53,37" stroke="${palette.hair}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <path d="M67,37 Q72,34 77,37" stroke="${palette.hair}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <ellipse cx="40" cy="56" rx="6" ry="4" fill="#F2A4A0" opacity="0.55"/>
+          <ellipse cx="80" cy="56" rx="6" ry="4" fill="#F2A4A0" opacity="0.55"/>
+          <g id="${prefix}-eyes"></g>
+          <g style="display:${palette.glasses ? 'block':'none'}">
+            <rect x="41" y="39" width="15" height="10" rx="4" fill="none" stroke="${INK}" stroke-width="2.2"/>
+            <rect x="64" y="39" width="15" height="10" rx="4" fill="none" stroke="${INK}" stroke-width="2.2"/>
+            <line x1="56" y1="44" x2="64" y2="44" stroke="${INK}" stroke-width="2.2"/>
+          </g>
+          <path id="${prefix}-mouthPath" d="M50,58 Q60,64 70,58" stroke="${INK}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+          <circle id="${prefix}-mouthO" cx="60" cy="60" r="4" fill="${INK}" style="display:none"/>
+        </g>
+      </g>
+    </g>
+  </svg>`;
+}
+
+function setPose(prefix, poseKey){
+  const p = POSES[poseKey] || POSES.idle;
+  const eyesEl = document.getElementById(prefix+'-eyes');
+  if(eyesEl) eyesEl.innerHTML = EYE_MARKUP[p.eyes];
+  const mouthPath = document.getElementById(prefix+'-mouthPath');
+  const mouthO = document.getElementById(prefix+'-mouthO');
+  if(mouthPath && mouthO){
+    if(p.mouth === 'o'){ mouthO.style.display='block'; mouthPath.style.display='none'; }
+    else{ mouthO.style.display='none'; mouthPath.style.display='block'; mouthPath.setAttribute('d', MOUTH_D[p.mouth]); }
+  }
+  const leftArm = document.getElementById(prefix+'-leftArm');
+  const rightArm = document.getElementById(prefix+'-rightArm');
+  if(leftArm){ leftArm.style.transformOrigin='34px 82px'; leftArm.style.transform=`rotate(${p.leftArm}deg)`; }
+  if(rightArm){ rightArm.style.transformOrigin='86px 82px'; rightArm.style.transform=`rotate(${p.rightArm}deg)`; }
+  const head = document.getElementById(prefix+'-head');
+  if(head){ head.style.transformOrigin='60px 72px'; head.style.transform=`rotate(${p.headTilt}deg)`; }
+  const bodyAnim = document.getElementById(prefix+'-bodyAnim');
+  if(bodyAnim) bodyAnim.setAttribute('class', 'char-body-anim ' + p.bodyAnim);
+  const root = document.getElementById(prefix+'-root');
+  if(root){ root.classList.remove('pop'); void root.offsetWidth; root.classList.add('pop'); }
+}
+function applyStagePose(pose){
+  setPose('protagonist', (pose && pose.player) || 'idle');
+  setPose('npc', (pose && pose.npc) || 'idle');
+}
+function refreshProtagonist(){
+  document.getElementById('protagonistWrap').innerHTML = characterSVG('protagonist', PLAYER_PALETTE);
+  setPose('protagonist','idle');
+}
+
+/* ---------- customize screen ---------- */
+function buildSwatches(){
+  // 1. gender (sets sensible defaults, doesn't lock later choices)
+  const genderRow = document.getElementById('genderChips');
+  genderRow.innerHTML = '';
+  GENDERS.forEach(g=>{
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip-btn' + (PLAYER_PALETTE.gender===g.key ? ' active':'');
+    b.textContent = g.label;
+    b.onclick = () => {
+      PLAYER_PALETTE.gender = g.key;
+      if(g.key === 'female'){ PLAYER_PALETTE.bottomType='skirt'; PLAYER_PALETTE.hairstyle='long'; }
+      else { PLAYER_PALETTE.bottomType='pants'; PLAYER_PALETTE.hairstyle='short'; }
+      refreshProtagonist(); buildSwatches();
+    };
+    genderRow.appendChild(b);
+  });
+
+  // 2.1 shirt color
+  const shirtRow = document.getElementById('shirtSwatches');
+  shirtRow.innerHTML='';
+  SHIRT_COLORS.forEach(color=>{
+    const sw = document.createElement('div');
+    sw.className='swatch' + (color===PLAYER_PALETTE.shirt?' active':'');
+    sw.style.background=color;
+    sw.onclick=()=>{ PLAYER_PALETTE.shirt=color; refreshProtagonist(); buildSwatches(); };
+    shirtRow.appendChild(sw);
+  });
+
+  // 2.2 bottom type (pants/skirt) + its color
+  const btRow = document.getElementById('bottomTypeChips');
+  btRow.innerHTML = '';
+  BOTTOM_TYPES.forEach(o=>{
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip-btn' + (PLAYER_PALETTE.bottomType===o.key ? ' active':'');
+    b.textContent = o.label;
+    b.onclick = () => { PLAYER_PALETTE.bottomType = o.key; refreshProtagonist(); buildSwatches(); };
+    btRow.appendChild(b);
+  });
+  const bottomColorRow = document.getElementById('bottomColorSwatches');
+  bottomColorRow.innerHTML = '';
+  const isSkirt = PLAYER_PALETTE.bottomType === 'skirt';
+  const bottomPalette = isSkirt ? SHIRT_COLORS : PANTS_COLORS;
+  bottomPalette.forEach(color=>{
+    const sw = document.createElement('div');
+    const current = isSkirt ? PLAYER_PALETTE.skirtColor : PLAYER_PALETTE.pantsColor;
+    sw.className='swatch' + (color===current?' active':'');
+    sw.style.background=color;
+    sw.onclick=()=>{
+      if(isSkirt) PLAYER_PALETTE.skirtColor=color; else PLAYER_PALETTE.pantsColor=color;
+      refreshProtagonist(); buildSwatches();
+    };
+    bottomColorRow.appendChild(sw);
+  });
+
+  // 3. skin tone
+  const skinRow = document.getElementById('skinSwatches');
+  skinRow.innerHTML = '';
+  SKIN_TONES.forEach(color=>{
+    const sw = document.createElement('div');
+    sw.className='swatch' + (color===PLAYER_PALETTE.skin?' active':'');
+    sw.style.background=color;
+    sw.onclick=()=>{ PLAYER_PALETTE.skin=color; refreshProtagonist(); buildSwatches(); };
+    skinRow.appendChild(sw);
+  });
+
+  // 5. hairstyle + hair color
+  const hsRow = document.getElementById('hairstyleChips');
+  hsRow.innerHTML = '';
+  HAIRSTYLES.forEach(h=>{
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip-btn' + (PLAYER_PALETTE.hairstyle===h.key ? ' active':'');
+    b.textContent = h.label;
+    b.onclick = () => { PLAYER_PALETTE.hairstyle = h.key; refreshProtagonist(); buildSwatches(); };
+    hsRow.appendChild(b);
+  });
+  const hairRow = document.getElementById('hairSwatches');
+  hairRow.innerHTML='';
+  HAIR_COLORS.forEach(color=>{
+    const sw = document.createElement('div');
+    sw.className='swatch' + (color===PLAYER_PALETTE.hair?' active':'');
+    sw.style.background=color;
+    sw.onclick=()=>{ PLAYER_PALETTE.hair=color; refreshProtagonist(); buildSwatches(); };
+    hairRow.appendChild(sw);
+  });
+
+  // 6. shoe color
+  const shoeRow = document.getElementById('shoeSwatches');
+  shoeRow.innerHTML = '';
+  SHOE_COLORS.forEach(color=>{
+    const sw = document.createElement('div');
+    sw.className='swatch' + (color===PLAYER_PALETTE.shoe?' active':'');
+    sw.style.background=color;
+    if(color === '#C9C9C9') sw.style.boxShadow = 'inset 0 0 0 1px rgba(0,0,0,.2)';
+    sw.onclick=()=>{ PLAYER_PALETTE.shoe=color; refreshProtagonist(); buildSwatches(); };
+    shoeRow.appendChild(sw);
+  });
+
+  document.getElementById('glassesBtn').className = 'chip-btn'+(PLAYER_PALETTE.glasses?' active':'');
+  document.getElementById('hatBtn').className = 'chip-btn'+(PLAYER_PALETTE.hat?' active':'');
+}
+document.getElementById('glassesBtn').onclick=()=>{ PLAYER_PALETTE.glasses=!PLAYER_PALETTE.glasses; refreshProtagonist(); buildSwatches(); };
+document.getElementById('hatBtn').onclick=()=>{ PLAYER_PALETTE.hat=!PLAYER_PALETTE.hat; refreshProtagonist(); buildSwatches(); };
+
+let playerName = '';
+function updateLobbyGreeting(){
+  const el = document.getElementById('lobbyGreeting');
+  if(!el) return;
+  el.textContent = playerName
+    ? `ยินดีต้อนรับ, ${playerName}! ตัวละครของคุณพร้อมออกเดินทางแล้ว`
+    : 'ตัวละครของคุณพร้อมแล้ว จะเริ่มออกเดินทางเลย หรือแวะแต่งตัวอีกครั้งก่อนก็ได้';
+}
+document.getElementById('playerNameInput').addEventListener('input', (e)=>{
+  playerName = e.target.value.trim();
+  updateLobbyGreeting();
+  if(playerName){
+    document.getElementById('playerNameInput').classList.remove('error');
+    document.getElementById('nameError').style.display = 'none';
+  }
+});
+function attemptStartGame(){
+  const input = document.getElementById('playerNameInput');
+  playerName = input.value.trim();
+  if(!playerName){
+    document.getElementById('nameError').style.display = 'block';
+    input.classList.add('error');
+    input.classList.remove('shake');
+    void input.offsetWidth;
+    input.classList.add('shake');
+    input.focus();
+    playBad();
+    return;
+  }
+  goTo('knowledge');
+}
+
+function openLobby(){
+  moveStage('stageSlot-lobby');
+  document.getElementById('npcWrap').style.display='none';
+  refreshProtagonist();
+  updateLobbyGreeting();
+  goTo('lobby');
+}
+
+function openCustomize(){
+  moveStage('stageSlot-customize');
+  document.getElementById('npcWrap').style.display='none';
+  buildSwatches();
+  goTo('customize');
+}
+
+/* ---------- scene backdrop + props ---------- */
+const PROP_SVG = {
+  flag: `<svg width="30" height="70" viewBox="0 0 30 70"><rect x="12" y="0" width="4" height="70" fill="#C9C9C9"/><path d="M16,6 L30,12 L16,18 Z" fill="#D9553A"/></svg>`,
+  lamp: `<svg width="28" height="76" viewBox="0 0 28 76"><rect x="11" y="18" width="4" height="58" fill="#3A3A42"/><path d="M4,18 Q13,2 22,18 Z" fill="#3A3A42"/><circle cx="13" cy="18" r="7" fill="#FFE9A8"/></svg>`,
+  books: `<svg width="44" height="28" viewBox="0 0 44 28"><rect x="0" y="18" width="44" height="8" rx="2" fill="#4C9A6A"/><rect x="3" y="10" width="36" height="8" rx="2" fill="#E7A93D"/><rect x="6" y="2" width="28" height="8" rx="2" fill="#2E7FB8"/></svg>`,
+  phone: `<svg width="26" height="42" viewBox="0 0 26 42"><rect x="0" y="0" width="26" height="42" rx="6" fill="#2B2E38"/><rect x="3" y="4" width="20" height="30" rx="2" fill="#8FE3D6"/></svg>`,
+  ballot: `<svg width="38" height="32" viewBox="0 0 38 32"><rect x="0" y="8" width="38" height="24" rx="3" fill="#8A5A33"/><rect x="13" y="0" width="12" height="10" fill="#8A5A33"/><rect x="15" y="2" width="8" height="3" fill="#2B2118"/></svg>`,
+  tree: `<svg width="36" height="82" viewBox="0 0 36 82"><rect x="15" y="42" width="6" height="40" rx="2" fill="#8A5A33"/><circle cx="18" cy="28" r="24" fill="#4C9A6A"/><circle cx="6" cy="38" r="14" fill="#5CAE7A"/><circle cx="30" cy="38" r="14" fill="#5CAE7A"/></svg>`
+};
+function renderProp(type, container){ container.innerHTML = PROP_SVG[type] || ''; }
+function renderDecor(type, container){
+  container.innerHTML = '';
+  if(type === 'sun'){
+    const s = document.createElement('div'); s.className='decor-sun'; container.appendChild(s);
+  } else if(type === 'dusk'){
+    const m = document.createElement('div'); m.className='decor-moon'; container.appendChild(m);
+    [[14,20],[40,14],[80,30],[10,44],[60,10]].forEach(([l,t],i)=>{
+      const st=document.createElement('div'); st.className='decor-star';
+      st.style.left=l+'px'; st.style.top=t+'px'; st.style.animationDelay=(i*0.25)+'s';
+      container.appendChild(st);
+    });
+  } else if(type === 'window' || type === 'window-warm'){
+    const w = document.createElement('div'); w.className='decor-window';
+    if(type==='window-warm') w.style.background='rgba(255,214,120,.28)';
+    container.appendChild(w);
+  }
+}
+function renderSceneStage(chapter){
+  const v = chapter.visual;
+  document.getElementById('sceneSky').style.background = `linear-gradient(180deg, ${v.sky[0]}, ${v.sky[1]})`;
+  document.getElementById('sceneGround').style.background = `linear-gradient(180deg, ${v.ground[0]}, ${v.ground[1]})`;
+  renderDecor(v.decor, document.getElementById('sceneDecor'));
+  renderProp(v.prop, document.getElementById('sceneProp'));
+}
+
+/* ---------- stage DOM + slot management ---------- */
+let stageMaster;
+function buildStage(){
+  stageMaster = document.createElement('div');
+  stageMaster.className = 'scene-stage panel';
+  stageMaster.id = 'stageMaster';
+  stageMaster.innerHTML = `
+    <div class="sky" id="sceneSky"><div class="decor" id="sceneDecor"></div></div>
+    <div class="prop" id="sceneProp"></div>
+    <div class="ground" id="sceneGround"></div>
+    <div class="charWrap protagonist" id="protagonistWrap">${characterSVG('protagonist', PLAYER_PALETTE)}</div>
+    <div class="charWrap npc" id="npcWrap"></div>
+  `;
+  document.getElementById('stageSlot-story').appendChild(stageMaster);
+}
+function moveStage(slotId){ document.getElementById(slotId).appendChild(stageMaster); }
+
+/* ---------- feedback effects ---------- */
+function spawnSparkles(){
+  const wrap = document.getElementById('protagonistWrap');
+  for(let i=0;i<6;i++){
+    const sp = document.createElement('span'); sp.className='sparkle';
+    const angle = (Math.PI*2*i)/6;
+    sp.style.setProperty('--dx', (Math.cos(angle)*30)+'px');
+    sp.style.setProperty('--dy', (Math.sin(angle)*30 - 12)+'px');
+    sp.style.background = ['#E7A93D','#4C9A6A','#2E7FB8','#D9553A'][i%4];
+    wrap.appendChild(sp);
+    setTimeout(()=> sp.remove(), 650);
+  }
+}
+function spawnConfetti(){
+  const box = document.getElementById('goodBox');
+  const colors = ['#E7A93D','#4C9A6A','#2E7FB8','#D9553A'];
+  for(let i=0;i<16;i++){
+    const cf = document.createElement('span'); cf.className='confetti';
+    cf.style.left = (Math.random()*90+2)+'%';
+    cf.style.background = colors[i % colors.length];
+    cf.style.animationDelay = (Math.random()*0.3)+'s';
+    box.appendChild(cf);
+    setTimeout(()=> cf.remove(), 1300);
+  }
+}
+function triggerFlash(){
+  const f = document.getElementById('flashOverlay');
+  f.classList.add('show');
+  setTimeout(()=> f.classList.remove('show'), 180);
+}
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+/* =================== STORY DATA (branching node graph) =================== */
+const CHAPTERS = [
+  {
+    id:'survival', title:'ปากท้องของน้องพลอย', subtitle:'สิทธิที่จะมีชีวิตรอด',
+    transition:'เช้าวันจันทร์ ที่โรงเรียนบ้านสวนดี',
+    nextHint:'เย็นวันเดียวกัน หลังเลิกเรียน... จะมีอีกเหตุการณ์หนึ่งรออยู่ที่หน้าโรงเรียน',
+    visual:{ sky:['#BFE3EE','#FCE8B4'], ground:['#8FC78B','#79B475'], decor:'sun', prop:'flag' },
+    npcPalette:{ hair:'#5C3A22', shirt:'var(--c-survival)' },
+    startNode:'start',
+    nodes:{
+      start:{ type:'choice', pose:{player:'worried', npc:'sad'},
+        text:"เช้าวันจันทร์ ระหว่างรอเข้าแถวหน้าเสาธง คุณสังเกตเห็นน้องพลอยเพื่อนร่วมชั้นหน้าซีดและดูอ่อนเพลียมาหลายวัน น้องพลอยไม่ได้กินอาหารกลางวันเลยในช่วงนี้ เมื่อถามเบาๆ น้องพลอยกระซิบบอกว่า “แม่ป่วยหนัก ที่บ้านไม่มีข้าวจะกิน พ่อก็ไปทำงานต่างจังหวัดไม่ได้กลับมาหลายเดือนแล้ว” คุณควรทำอย่างไร?",
+        choices:[
+          {text:"รีบไปเล่าเรื่องนี้ให้คุณครูที่ไว้ใจได้ฟังทันที", feel:'good', next:'goodTeacher'},
+          {text:"ให้เงินค่าขนมของตัวเองกับน้องพลอย แล้วไม่บอกใคร", feel:'alt', next:'altGiveMoney'},
+          {text:"เก็บเป็นความลับไว้เพราะกลัวน้องพลอยจะอาย", feel:'bad', next:'conseqSecret'}
+        ]},
+      conseqSecret:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'start',
+        text:"น้องพลอยขาดเรียนถี่ขึ้นเรื่อยๆ จนครูเริ่มไม่เห็นหน้า และไม่มีใครรู้ว่าครอบครัวของน้องกำลังต้องการความช่วยเหลืออย่างเร่งด่วน การนิ่งเฉยอาจทำให้สถานการณ์ที่เป็นอันตรายต่อชีวิตของน้องแย่ลงไปอีก" },
+      goodTeacher:{ type:'choice', pose:{player:'thinking', npc:'idle'},
+        text:"ก่อนเข้าห้องเรียน คุณครูรับฟังอย่างตั้งใจและถามคุณว่า “ขอบคุณที่มาบอกครูนะ ครูอยากรู้ว่าเราจะช่วยน้องพลอยต่อยังไงดี” คุณจะแนะนำครูว่าอย่างไร?",
+        choices:[
+          {text:"เสนอให้ครูประสานงานกับฝ่ายแนะแนวหรือหน่วยงานคุ้มครองเด็กในพื้นที่ เพื่อช่วยเหลือครอบครัวน้องพลอยอย่างเป็นระบบ", feel:'good', next:'endGood'},
+          {text:"บอกให้ครูซื้อข้าวกล่องให้น้องพลอยกินทุกวันก็พอแล้ว", feel:'bad', next:'conseqRice'}
+        ]},
+      conseqRice:{ type:'conseq', pose:{player:'worried', npc:'sad'}, next:'goodTeacher',
+        text:"การช่วยเรื่องอาหารเป็นสิ่งดี แต่ปัญหาที่แท้จริงคือแม่ของน้องพลอยกำลังป่วยหนักและครอบครัวขาดคนดูแล ถ้าไม่มีหน่วยงานที่เกี่ยวข้องเข้ามาช่วยเหลืออย่างจริงจัง น้องพลอยอาจต้องเผชิญปัญหานี้ไปอีกนาน" },
+      altGiveMoney:{ type:'choice', pose:{player:'worried', npc:'sad'},
+        text:"น้องพลอยรับเงินไปซื้อข้าวได้สองสามวัน แต่พอถึงวันศุกร์ก็กลับมาซีดเซียวและไม่มีแรงอีกครั้ง คุณเห็นว่าวิธีนี้ช่วยได้แค่ชั่วคราว คุณจะทำอย่างไรต่อ?",
+        choices:[
+          {text:"รีบไปบอกคุณครูตอนนี้เลย ดีกว่าปล่อยให้น้องพลอยเผชิญปัญหานี้คนเดียวต่อไป", feel:'good', next:'altTeacher'},
+          {text:"คิดว่าให้เงินไปเรื่อยๆ ก็คงพอไหว", feel:'bad', next:'conseqAltMoney'}
+        ]},
+      conseqAltMoney:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'altGiveMoney',
+        text:"เงินค่าขนมของคุณเองก็มีจำกัด และปัญหาที่บ้านของน้องพลอยก็ไม่ได้ถูกแก้ที่ต้นเหตุเลย การพึ่งพาความช่วยเหลือเล็กๆ ไปเรื่อยๆ ไม่ใช่ทางออกที่ยั่งยืนสำหรับเรื่องใหญ่ขนาดนี้" },
+      altTeacher:{ type:'end', endingLabel:'ทางออกอีกเส้นทางหนึ่ง', pose:{player:'happy', npc:'happy'},
+        text:"คุณครูรับฟังและดีใจที่คุณมาบอกแม้จะผ่านไปหลายวันแล้ว ครูรีบประสานงานช่วยเหลือครอบครัวน้องพลอยทันที น้องพลอยได้รับความช่วยเหลือในที่สุด แม้จะช้าไปหน่อยเพราะช่วงแรกเราลองแก้ปัญหาด้วยตัวเองก่อน แต่โชคดีที่รีบบอกผู้ใหญ่ก่อนสถานการณ์จะแย่ไปกว่านี้ คุณได้ปกป้อง “สิทธิที่จะมีชีวิตรอด” ของน้องพลอยไว้ได้สำเร็จ!" },
+      endGood:{ type:'end', endingLabel:'ทางออกที่ดีที่สุด', pose:{player:'happy', npc:'happy'},
+        text:"คุณครูประสานงานกับหน่วยงานคุ้มครองเด็กและโรงพยาบาลในพื้นที่ทันที ทำให้แม่ของน้องพลอยได้รับการรักษา และครอบครัวได้รับความช่วยเหลือด้านอาหารและค่าครองชีพ น้องพลอยกลับมายิ้มได้อีกครั้งก่อนเลิกเรียนเย็นนั้น คุณได้ปกป้อง “สิทธิที่จะมีชีวิตรอด” ของน้องพลอยไว้ได้สำเร็จ!" }
+    }
+  },
+  {
+    id:'protection', title:'คนแปลกหน้าหน้าโรงเรียน', subtitle:'สิทธิที่จะได้รับการปกป้องคุ้มครอง',
+    transition:'เย็นวันจันทร์ หลังเลิกเรียน หน้าประตูโรงเรียน',
+    nextHint:'เช้าวันอังคาร ในห้องเรียน... เพื่อนอีกคนเริ่มมีที่นั่งว่างบ่อยขึ้นเรื่อยๆ',
+    visual:{ sky:['#4A3B6B','#E0885A'], ground:['#7A7A86','#686873'], decor:'dusk', prop:'lamp' },
+    npcPalette:{ hair:'#2E2118', shirt:'var(--c-protection)' },
+    startNode:'start',
+    nodes:{
+      start:{ type:'choice', pose:{player:'alert', npc:'worried'},
+        text:"หลังเลิกเรียนวันเดียวกันนั้นเอง ขณะที่คุณเดินออกจากโรงเรียน มีชายแปลกหน้าคนหนึ่งเดินเข้ามาหาน้องนุ่นเพื่อนของคุณตรงประตูโรงเรียน เขายิ้มแล้วพูดว่า “พ่อของหนูฝากพี่มารับ วันนี้พ่อไปทำธุระไม่ว่าง ไปกับพี่เถอะ พี่จะพาไปส่งที่บ้าน” น้องนุ่นดูลังเลและหันมามองคุณ คุณจะทำอย่างไร?",
+        choices:[
+          {text:"รีบบอกน้องนุ่นว่าอย่าไปด้วย แล้วพากันไปหาคุณครูหรือเจ้าหน้าที่รักษาความปลอดภัยทันที", feel:'good', next:'goodTeacher'},
+          {text:"ให้น้องนุ่นลองถามชื่อพ่อแม่เพื่อเช็คดูก่อนว่าใช่คนที่พ่อแม่ส่งมาจริงไหม", feel:'alt', next:'altCheck'},
+          {text:"คิดว่าเขาอาจจะรู้จักพ่อแม่จริงๆ เลยบอกน้องนุ่นให้ลองไปกับเขาดู", feel:'bad', next:'conseqDanger'}
+        ]},
+      conseqDanger:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'start',
+        text:"นี่เป็นสถานการณ์ที่อันตรายมาก! การไปกับคนแปลกหน้าโดยไม่มีการยืนยันจากผู้ใหญ่ที่ไว้ใจได้ อาจทำให้น้องนุ่นตกอยู่ในอันตรายถึงชีวิต สิทธิที่จะได้รับการปกป้องคุ้มครองของเด็กทุกคนสำคัญที่สุด อย่าเสี่ยงเด็ดขาด" },
+      altCheck:{ type:'choice', pose:{player:'alert', npc:'worried'},
+        text:"คนแปลกหน้าตอบคำถามได้อย่างมั่นใจราวกับรู้จักพ่อแม่จริง น้องนุ่นเริ่มลังเลมากขึ้นและเกือบจะเดินตามไป เขายังคงเร่งให้รีบไปโดยไม่ยอมรอให้โทรเช็คกับพ่อแม่ก่อน คุณจะทำอย่างไร?",
+        choices:[
+          {text:"หยุดน้องนุ่นทันที ยืนยันว่าต้องโทรเช็คกับพ่อแม่หรือแจ้งครูก่อนเท่านั้น ไม่ว่าคนนั้นจะตอบถูกแค่ไหน", feel:'good', next:'altEnd'},
+          {text:"เชื่อว่าเขาตอบถูกแล้วก็คงไว้ใจได้", feel:'bad', next:'conseqDanger'}
+        ]},
+      goodTeacher:{ type:'choice', pose:{player:'thinking', npc:'idle'},
+        text:"คุณครูและ รปภ. มาถึงทันเวลา ชายแปลกหน้ารีบเดินจากไปอย่างรวดเร็วเมื่อเห็นผู้ใหญ่เดินมา คุณครูชมเชยที่คุณกล้าขอความช่วยเหลือ แล้วถามว่า “ครั้งหน้าถ้าเจอเหตุการณ์แบบนี้อีก เราจะสอนเพื่อนๆ ในห้องว่ายังไงดี?”",
+        choices:[
+          {text:"บอกเพื่อนๆ ว่าไม่ควรไปกับคนแปลกหน้าไม่ว่าจะอ้างว่าใครส่งมา และให้รีบบอกผู้ใหญ่ที่ไว้ใจได้ทันที", feel:'good', next:'endGood'},
+          {text:"บอกเพื่อนๆ แค่ว่าให้ระวังคนแปลกหน้าที่ “หน้าตาไม่ดี” เท่านั้น", feel:'bad', next:'conseqLooks'}
+        ]},
+      conseqLooks:{ type:'conseq', pose:{player:'worried', npc:'idle'}, next:'goodTeacher',
+        text:"คนที่ไม่หวังดีมักไม่ได้มีหน้าตาที่ “ดูอันตราย” เสมอไป บางครั้งเขาอาจดูใจดีและพูดจาน่าเชื่อถือ การตัดสินจากรูปลักษณ์ภายนอกเพียงอย่างเดียวอาจทำให้ประมาทได้ กฎสำคัญคือไม่ไปกับใครก็ตามที่ไม่ได้นัดหมายไว้กับผู้ปกครอง โดยไม่มีการยืนยัน" },
+      altEnd:{ type:'end', endingLabel:'ทางออกอีกเส้นทางหนึ่ง (เฉียดฉิว)', pose:{player:'happy', npc:'happy'},
+        text:"น้องนุ่นโทรเช็คกับพ่อแม่ทันที และพบว่าพ่อแม่ไม่ได้ส่งใครมารับเลย คุณครูและ รปภ. รีบมาช่วยได้ทัน แม้สถานการณ์จะเสี่ยงกว่าปกติเพราะเกือบเชื่อคำตอบของคนแปลกหน้า แต่การยืนยันให้แน่ใจก่อนเสมอก็ช่วยชีวิตน้องนุ่นไว้ได้ คุณได้ปกป้อง “สิทธิที่จะได้รับการปกป้องคุ้มครอง” ไว้ได้สำเร็จ ผ่านสถานการณ์ที่หวาดเสียวกว่าเดิม!" },
+      endGood:{ type:'end', endingLabel:'ทางออกที่ดีที่สุด', pose:{player:'happy', npc:'happy'},
+        text:"ยอดเยี่ยม! คุณช่วยปกป้องน้องนุ่นจากอันตรายได้ทันเวลา และยังช่วยสอนเพื่อนๆ ให้รู้จักวิธีป้องกันตัวเองอีกด้วย เรื่องนี้ทำให้คุณครูเริ่มไว้ใจและมองว่าคุณเป็นคนที่กล้าพูดกล้าขอความช่วยเหลือเมื่อเห็นเพื่อนเดือดร้อน คุณได้ปกป้อง “สิทธิที่จะได้รับการปกป้องคุ้มครอง” ไว้ได้สำเร็จ!" }
+    }
+  },
+  {
+    id:'development', title:'ห้องเรียนที่ขาดหายไปของเอก', subtitle:'สิทธิที่จะได้รับการพัฒนา',
+    transition:'เช้าวันอังคาร ในห้องเรียน ป.5',
+    nextHint:'บ่ายวันพุธ ระหว่างพักกลางวัน... มีเรื่องราวในโลกออนไลน์ที่คุณอาจไม่ทันตั้งตัว',
+    visual:{ sky:['#DCEEF5','#F5EFD9'], ground:['#B5875A','#A3764C'], decor:'window', prop:'books' },
+    npcPalette:{ hair:'#241A12', shirt:'var(--c-development)' },
+    startNode:'start',
+    nodes:{
+      start:{ type:'choice', pose:{player:'worried', npc:'sad'},
+        text:"เช้าวันอังคาร คุณสังเกตว่าเอกเพื่อนสนิทของคุณขาดเรียนบ่อยขึ้นเรื่อยๆ ในช่วงนี้ เมื่อถามเอกตอบเบาๆ ว่า “พ่อแม่ให้ไปช่วยขายของที่ตลาดตอนเช้ามืดทุกวัน บางวันก็เหนื่อยจนไม่มีแรงมาโรงเรียน” คุณจะทำอย่างไร?",
+        choices:[
+          {text:"ชวนเอกคุยด้วยความเข้าใจ แล้วชวนไปเล่าเรื่องนี้ให้คุณครูฟังด้วยกัน เพื่อหาทางช่วยเหลือ", feel:'good', next:'goodTeacher'},
+          {text:"อาสาทำการบ้านและสรุปบทเรียนให้เอกทุกวันแบบเงียบๆ โดยไม่บอกใคร", feel:'alt', next:'altHomework'},
+          {text:"คิดว่าเป็นเรื่องของครอบครัวเอก ไม่ควรไปยุ่ง", feel:'bad', next:'conseqIgnore'}
+        ]},
+      conseqIgnore:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'start',
+        text:"เอกเรียนไม่ทันเพื่อนมากขึ้นเรื่อยๆ จนเริ่มไม่มั่นใจในตัวเองและคิดจะลาออกกลางคัน การศึกษาเป็นสิทธิพื้นฐานของเด็กทุกคน การนิ่งเฉยเมื่อเห็นเพื่อนกำลังจะเสียโอกาสนี้ไป อาจทำให้เขาต้องเสียอนาคตไปอย่างน่าเสียดาย" },
+      goodTeacher:{ type:'choice', pose:{player:'thinking', npc:'idle'},
+        text:"คุณครูจำได้ว่าคุณเพิ่งช่วยน้องพลอยและน้องนุ่นมาไม่กี่วันก่อน จึงรับฟังเรื่องของเอกอย่างตั้งใจเป็นพิเศษ แล้วถามว่า “ครูจะลองคุยกับผู้ปกครองของเอกดูนะ แต่เราจะช่วยเอกให้เรียนทันเพื่อนๆ ระหว่างนี้ได้ยังไงบ้าง?”",
+        choices:[
+          {text:"เสนอให้ครูช่วยประสานหาทุนการศึกษาหรือความช่วยเหลือให้ครอบครัวเอก พร้อมตั้งกลุ่มติวช่วยเอกทบทวนบทเรียนในวันที่มาเรียน", feel:'good', next:'endGood'},
+          {text:"บอกครูว่าไม่ต้องทำอะไรเพิ่ม แค่รอให้เอกมาเรียนเองก็พอ", feel:'bad', next:'conseqWait'}
+        ]},
+      conseqWait:{ type:'conseq', pose:{player:'worried', npc:'sad'}, next:'goodTeacher',
+        text:"ถ้าไม่มีการช่วยเหลือครอบครัวเอกอย่างจริงจัง เอกก็อาจต้องหยุดเรียนไปช่วยงานที่บ้านต่อไปเรื่อยๆ การรอเฉยๆ ไม่ได้ช่วยแก้ปัญหาที่ต้นเหตุ" },
+      altHomework:{ type:'choice', pose:{player:'thinking', npc:'sad'},
+        text:"เอกเริ่มพึ่งพาการที่คุณช่วยทำการบ้านให้จนไม่ค่อยตั้งใจเรียนตอนมาโรงเรียน แถมยังขาดเรียนถี่เท่าเดิม ครูเริ่มสงสัยว่าทำไมงานของเอกกับคุณถึงคล้ายกันมาก คุณจะทำอย่างไรต่อ?",
+        choices:[
+          {text:"สารภาพความจริงกับครูและชวนเอกไปคุยกับครูด้วยกันเพื่อหาทางช่วยเหลือที่ถูกต้อง", feel:'good', next:'altEnd'},
+          {text:"ทำเนียนต่อไปเหมือนไม่มีอะไรเกิดขึ้น", feel:'bad', next:'conseqPretend'}
+        ]},
+      conseqPretend:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'altHomework',
+        text:"การปิดบังความจริงทำให้ปัญหาไม่ได้รับการแก้ไข เอกยังต้องขาดเรียนต่อไปเรื่อยๆ และเริ่มเครียดที่ต้องทำตัวเหมือนไม่มีอะไรเกิดขึ้น ยิ่งปิดบังนานเท่าไหร่ก็ยิ่งแก้ไขยากขึ้นเท่านั้น" },
+      altEnd:{ type:'end', endingLabel:'ทางออกอีกเส้นทางหนึ่ง', pose:{player:'happy', npc:'happy'},
+        text:"ครูเข้าใจและไม่ได้ว่าอะไรที่ทั้งสองคนช่วยกันแบบนี้ แต่ก็รีบดำเนินการช่วยเหลือครอบครัวเอกอย่างเป็นทางการทันที แม้จะเริ่มช้าไปหน่อยเพราะตอนแรกเลือกแก้ปัญหากันเองก่อน แต่สุดท้ายเอกก็ได้รับความช่วยเหลือที่ตรงจุด คุณได้ปกป้อง “สิทธิที่จะได้รับการพัฒนา” ของเอกไว้ได้สำเร็จ ผ่านอีกเส้นทางหนึ่ง!" },
+      endGood:{ type:'end', endingLabel:'ทางออกที่ดีที่สุด', pose:{player:'happy', npc:'happy'},
+        text:"เยี่ยมมาก! โรงเรียนช่วยประสานทุนการศึกษาให้ครอบครัวเอก ทำให้พ่อแม่ไม่ต้องให้เอกหยุดเรียนไปช่วยขายของอีก เอกกลับมาเรียนได้เต็มเวลา และเพื่อนๆ ในกลุ่มติวก็ช่วยให้เขาตามบทเรียนทัน คุณได้ปกป้อง “สิทธิที่จะได้รับการพัฒนา” ของเอกไว้ได้สำเร็จ!" }
+    }
+  },
+  {
+    id:'online', title:'เพื่อนใหม่ในเกมออนไลน์', subtitle:'สิทธิที่จะได้รับการปกป้องคุ้มครอง (ภัยออนไลน์)',
+    transition:'บ่ายวันพุธ ช่วงพักกลางวัน ในห้องเรียน',
+    nextHint:'บ่ายวันพฤหัสบดี ที่สนามหลังโรงเรียน... มีเรื่องหนึ่งที่คุณเห็นกับตาตัวเอง',
+    visual:{ sky:['#DFF0E0','#FDE7C2'], ground:['#B5875A','#A3764C'], decor:'window-warm', prop:'phone' },
+    npcPalette:{ hair:'#3A2A1C', shirt:'var(--c-protection)' },
+    startNode:'start',
+    nodes:{
+      start:{ type:'choice', pose:{player:'worried', npc:'worried'},
+        text:"น้องเบลเพื่อนร่วมชั้นเล่าให้ฟังว่ามี “เพื่อนใหม่” ในเกมออนไลน์ที่คุยกันมาสักพักแล้ว วันนี้เพื่อนคนนั้นขอที่อยู่บ้านและเบอร์โทรของน้องเบล บอกว่าจะส่งของขวัญพิเศษมาให้ น้องเบลลังเลและถามความเห็นคุณ คุณจะแนะนำน้องเบลว่าอย่างไร?",
+        choices:[
+          {text:"แนะนำว่าไม่ควรให้ข้อมูลส่วนตัวกับคนที่รู้จักแค่ในเกม แล้วชวนไปเล่าให้พ่อแม่หรือคุณครูฟัง", feel:'good', next:'goodParent'},
+          {text:"บอกให้ให้แค่เบอร์โทรอย่างเดียว ไม่ต้องให้ที่อยู่บ้าน", feel:'alt', next:'altPhone'},
+          {text:"บอกว่าไม่เป็นไร ถ้าเขาใจดีก็น่าจะให้ข้อมูลได้", feel:'bad', next:'conseqShare'}
+        ]},
+      conseqShare:{ type:'conseq', pose:{player:'sad', npc:'worried'}, next:'start',
+        text:"การให้ข้อมูลส่วนตัว เช่น ที่อยู่บ้านหรือเบอร์โทร กับคนแปลกหน้าที่รู้จักแค่ในโลกออนไลน์ อาจทำให้คนที่ไม่หวังดีนำข้อมูลไปใช้ในทางที่เป็นอันตรายได้ ไม่ว่าคนนั้นจะพูดจาน่าเชื่อถือแค่ไหน กฎสำคัญคือไม่ให้ข้อมูลส่วนตัวกับคนที่ไม่รู้จักตัวจริง และบอกผู้ใหญ่ที่ไว้ใจได้เสมอ" },
+      altPhone:{ type:'choice', pose:{player:'worried', npc:'worried'},
+        text:"น้องเบลให้เบอร์โทรไป ไม่นานหลังจากนั้นก็เริ่มมีข้อความและสายโทรเข้าจากเบอร์แปลกๆ บ่อยขึ้น ทำให้น้องเบลรู้สึกไม่สบายใจ น้องเบลกลับมาปรึกษาคุณอีกครั้ง คุณจะแนะนำอย่างไรต่อ?",
+        choices:[
+          {text:"แนะนำให้น้องเบลรีบบอกพ่อแม่ทันทีเพื่อบล็อกเบอร์แปลก และแจ้งความหากมีการคุกคามต่อเนื่อง", feel:'good', next:'altEnd'},
+          {text:"บอกว่าเดี๋ยวก็เลิกโทรมาเอง ไม่ต้องบอกใคร", feel:'bad', next:'conseqWaitCall'}
+        ]},
+      conseqWaitCall:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'altPhone',
+        text:"สายและข้อความแปลกๆ ยังคงเข้ามาเรื่อยๆ จนน้องเบลเริ่มกลัวและเครียด การนิ่งเฉยไม่ได้ทำให้สถานการณ์ดีขึ้น ยิ่งบอกผู้ใหญ่เร็วเท่าไหร่ก็ยิ่งช่วยได้เร็วเท่านั้น" },
+      goodParent:{ type:'choice', pose:{player:'idle', npc:'happy'},
+        text:"พ่อแม่ของน้องเบลรับฟังแล้วชื่นชมที่กล้าปรึกษาก่อนให้ข้อมูลอะไรไป แล้วถามว่า “ครั้งหน้าถ้ามีเพื่อนในเกมขอข้อมูลแบบนี้อีก เราจะรับมือยังไงดี?”",
+        choices:[
+          {text:"ตั้งกฎกับตัวเองว่าจะไม่ให้ข้อมูลส่วนตัวหรือรูปกับใครในเกมเด็ดขาด แล้วบอกผู้ใหญ่ทันทีถ้ามีคนพยายามขอ", feel:'good', next:'endGood'},
+          {text:"คิดว่าคุยกับเพื่อนในเกมไปเรื่อยๆ ก็ได้ ไม่มีอะไรน่ากลัว", feel:'bad', next:'conseqCarefree'}
+        ]},
+      conseqCarefree:{ type:'conseq', pose:{player:'worried', npc:'idle'}, next:'goodParent',
+        text:"การ์ดตกได้ง่ายถ้าคิดว่า “คงไม่เป็นไร” คนที่ไม่หวังดีมักค่อยๆ สร้างความคุ้นเคยก่อนขอสิ่งที่เสี่ยงมากขึ้นเรื่อยๆ การตั้งกฎที่ชัดเจนกับตัวเองไว้ตั้งแต่ต้นจะช่วยป้องกันได้ดีที่สุด" },
+      altEnd:{ type:'end', endingLabel:'ทางออกอีกเส้นทางหนึ่ง', pose:{player:'happy', npc:'happy'},
+        text:"โชคดีที่น้องเบลรีบบอกพ่อแม่ทัน ทำให้บล็อกเบอร์แปลกได้ก่อนจะเกิดปัญหาใหญ่กว่านี้ แม้จะให้เบอร์โทรไปตั้งแต่แรกซึ่งเสี่ยงเกินไป แต่การรีบแก้ไขเมื่อรู้ตัวก็ช่วยให้ทุกอย่างจบลงด้วยดี ครั้งหน้าจำไว้ว่าไม่ควรให้ข้อมูลส่วนตัวใดๆ กับคนที่รู้จักแค่ในโลกออนไลน์ตั้งแต่แรกจะปลอดภัยที่สุด คุณได้ช่วยปกป้อง “สิทธิที่จะได้รับการปกป้องคุ้มครอง” ของน้องเบลไว้ได้สำเร็จ!" },
+      endGood:{ type:'end', endingLabel:'ทางออกที่ดีที่สุด', pose:{player:'happy', npc:'happy'},
+        text:"เยี่ยมมาก! น้องเบลปลอดภัยและรู้วิธีป้องกันตัวเองในโลกออนไลน์มากขึ้น ครอบครัวของน้องเบลยังตั้งกติกาการเล่นเกมออนไลน์ร่วมกันเพื่อความปลอดภัยของทุกคนในบ้าน คุณได้ช่วยปกป้อง “สิทธิที่จะได้รับการปกป้องคุ้มครอง” ของน้องเบลในโลกออนไลน์ไว้ได้สำเร็จ!" }
+    }
+  },
+  {
+    id:'bullying', title:'แกล้งกันที่สนามหลังโรงเรียน', subtitle:'สิทธิที่จะได้รับการปกป้องคุ้มครอง (การกลั่นแกล้ง)',
+    transition:'บ่ายวันพฤหัสบดี ช่วงพักหลังเลิกเรียน ที่สนามหลังโรงเรียน',
+    nextHint:'เช้าวันศุกร์ ก่อนเข้าแถว... มีเรื่องที่คุณอาจไม่อยากเชื่อสายตาตัวเอง',
+    visual:{ sky:['#BFE3EE','#FFE7B0'], ground:['#8FC78B','#79B475'], decor:'sun', prop:'tree' },
+    npcPalette:{ hair:'#3A2A1C', shirt:'var(--c-protection)' },
+    startNode:'start',
+    nodes:{
+      start:{ type:'choice', pose:{player:'worried', npc:'sad'},
+        text:"ระหว่างเดินผ่านสนามหลังโรงเรียน คุณเห็นเพื่อนร่วมชั้นชื่อมิวถูกกลุ่มเพื่อนอีกกลุ่มล้อมวงล้อเลียนเรื่องรูปร่าง แย่งกระเป๋าไปโยนเล่น และไม่ยอมให้เข้ากลุ่มเล่นด้วยแบบนี้แทบทุกวัน มิวก้มหน้านิ่งไม่พูดอะไร คุณจะทำอย่างไร?",
+        choices:[
+          {text:"เข้าไปช่วยพูดหยุดสถานการณ์ทันทีอย่างใจเย็น แล้วพามิวไปแจ้งครูโดยเร็ว", feel:'good', next:'goodTeacher'},
+          {text:"ไม่กล้าเข้าไปตอนนั้น แต่ตามไปปลอบมิวทีหลังแล้วชวนคุย", feel:'alt', next:'altComfort'},
+          {text:"เดินเลยไปเพราะคิดว่าไม่ใช่เรื่องของตัวเอง", feel:'bad', next:'conseqIgnore'}
+        ]},
+      conseqIgnore:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'start',
+        text:"มิวถูกแกล้งซ้ำแทบทุกวันจนเริ่มไม่อยากมาโรงเรียน การเพิกเฉยเมื่อเห็นเพื่อนถูกรังแกอาจทำให้สถานการณ์แย่ลงเรื่อยๆ และทำให้เพื่อนรู้สึกว่าไม่มีใครช่วยเหลือเลย" },
+      goodTeacher:{ type:'choice', pose:{player:'thinking', npc:'idle'},
+        text:"คุณครูรับเรื่องและเรียกทุกฝ่ายมาคุย พร้อมถามคุณว่า “ครูอยากรู้ว่าเราจะช่วยดูแลไม่ให้เกิดเหตุการณ์แบบนี้ซ้ำได้ยังไงบ้าง”",
+        choices:[
+          {text:"เสนอให้ครูช่วยติดตามพฤติกรรมกลุ่มที่แกล้งอย่างต่อเนื่อง พร้อมชวนเพื่อนในห้องช่วยกันดูแลมิวไม่ให้โดนแกล้งซ้ำ", feel:'good', next:'endGood'},
+          {text:"บอกว่าคุยกันแค่ครั้งเดียวก็คงพอแล้ว", feel:'bad', next:'conseqOnce'}
+        ]},
+      conseqOnce:{ type:'conseq', pose:{player:'worried', npc:'sad'}, next:'goodTeacher',
+        text:"การคุยเพียงครั้งเดียวโดยไม่มีการติดตามต่อ อาจทำให้กลุ่มที่แกล้งกลับมาทำพฤติกรรมเดิมอีกเมื่อไม่มีใครคอยสังเกต การกลั่นแกล้งมักต้องอาศัยการดูแลอย่างต่อเนื่องจึงจะหยุดได้จริง" },
+      altComfort:{ type:'choice', pose:{player:'worried', npc:'sad'},
+        text:"มิวรู้สึกดีขึ้นที่มีคนรับฟัง แต่บอกว่ากลัวถ้าไปฟ้องครูจะโดนแกล้งหนักกว่าเดิม คุณจะทำอย่างไรต่อ?",
+        choices:[
+          {text:"อธิบายให้มิวเข้าใจว่าครูมีวิธีช่วยดูแลอย่างปลอดภัย แล้วชวนไปแจ้งครูด้วยกัน", feel:'good', next:'altEnd'},
+          {text:"เห็นด้วยว่าไม่ควรบอกใคร ปล่อยให้เรื่องผ่านไปเอง", feel:'bad', next:'conseqSilentBully'}
+        ]},
+      conseqSilentBully:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'altComfort',
+        text:"การไม่บอกผู้ใหญ่เลยทำให้การกลั่นแกล้งดำเนินต่อไปเรื่อยๆ มิวเริ่มเครียดและไม่อยากมาโรงเรียนมากขึ้น การกลั่นแกล้งไม่ใช่เรื่องที่เด็กควรต้องรับมือเพียงลำพัง" },
+      altEnd:{ type:'end', endingLabel:'ทางออกอีกเส้นทางหนึ่ง', pose:{player:'happy', npc:'happy'},
+        text:"มิวตัดสินใจไปแจ้งครูพร้อมกับคุณ คุณครูดูแลอย่างระมัดระวังเพื่อไม่ให้มิวถูกแกล้งซ้ำ และค่อยๆ ปรับพฤติกรรมของกลุ่มเพื่อนที่แกล้ง แม้จะเริ่มช้าไปหน่อยเพราะมิวกลัวในตอนแรก แต่สุดท้ายมิวก็รู้สึกปลอดภัยขึ้นมาก คุณได้ปกป้อง “สิทธิที่จะได้รับการปกป้องคุ้มครอง” ของมิวไว้ได้สำเร็จ ผ่านอีกเส้นทางหนึ่ง!" },
+      endGood:{ type:'end', endingLabel:'ทางออกที่ดีที่สุด', pose:{player:'happy', npc:'happy'},
+        text:"ยอดเยี่ยม! คุณครูดูแลอย่างต่อเนื่องจนกลุ่มที่เคยแกล้งมิวเปลี่ยนพฤติกรรม เพื่อนๆ ในห้องช่วยกันดูแลไม่ให้มิวโดนแกล้งซ้ำอีก มิวกลับมายิ้มและกล้าเล่นกับเพื่อนๆ เหมือนเดิม คุณได้ปกป้อง “สิทธิที่จะได้รับการปกป้องคุ้มครอง” ของมิวไว้ได้สำเร็จ!" }
+    }
+  },
+  {
+    id:'abuse', title:'รอยช้ำที่ซ่อนไว้', subtitle:'สิทธิที่จะได้รับการปกป้องคุ้มครอง (ความรุนแรงในครอบครัว)',
+    transition:'เช้าวันศุกร์ ก่อนเข้าแถวหน้าเสาธง',
+    nextHint:'พักกลางวันวันศุกร์... ยังมีอีกเรื่องหนึ่งที่ต้องตัดสินใจก่อนสัปดาห์นี้จะจบ',
+    visual:{ sky:['#BFE3EE','#FCE8B4'], ground:['#8FC78B','#79B475'], decor:'sun', prop:'tree' },
+    npcPalette:{ hair:'#241A12', shirt:'var(--c-protection)' },
+    startNode:'start',
+    nodes:{
+      start:{ type:'choice', pose:{player:'worried', npc:'sad'},
+        text:"เช้าวันศุกร์ คุณสังเกตเห็นน้องต้นเพื่อนร่วมชั้นมีรอยช้ำที่แขนและดูหวาดระแวงผิดปกติ เวลามีใครเดินเข้ามาใกล้ๆ แบบไม่ทันตั้งตัว น้องต้นจะสะดุ้งทุกครั้ง เมื่อถามเบาๆ ว่าเกิดอะไรขึ้น น้องต้นรีบบอกว่า “หกล้มเองน่ะ” แล้วรีบเปลี่ยนเรื่อง คุณจะทำอย่างไร?",
+        choices:[
+          {text:"บอกน้องต้นว่าพร้อมรับฟังเสมอ แล้วรีบไปเล่าสิ่งที่สังเกตเห็นให้คุณครูที่ไว้ใจได้ฟังทันที", feel:'good', next:'goodTeacher'},
+          {text:"ไม่พูดอะไรตอนนี้ แต่แอบสังเกตอาการของน้องต้นต่อไปอีกสักพัก", feel:'alt', next:'altObserve'},
+          {text:"เชื่อคำอธิบายว่าหกล้มเอง แล้วไม่คิดอะไรต่อ", feel:'bad', next:'conseqBelieve'}
+        ]},
+      conseqBelieve:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'start',
+        text:"รอยช้ำแบบนี้เกิดขึ้นกับน้องต้นซ้ำแล้วซ้ำเล่า และอาการหวาดระแวงก็ยิ่งชัดเจนขึ้นเรื่อยๆ การเชื่อคำอธิบายโดยไม่สังเกตสัญญาณอื่นประกอบ อาจทำให้พลาดโอกาสช่วยเหลือเพื่อนที่กำลังตกอยู่ในอันตราย" },
+      goodTeacher:{ type:'choice', pose:{player:'thinking', npc:'idle'},
+        text:"คุณครูรับฟังอย่างจริงจังและขอบคุณที่คุณกล้าบอก แล้วถามว่า “ครูจะดูแลเรื่องนี้อย่างระมัดระวังนะ มีอะไรอีกไหมที่สังเกตเห็น”",
+        choices:[
+          {text:"เล่าให้ครูฟังตามที่สังเกตเห็นจริงอย่างตรงไปตรงมา โดยไม่ใส่ความคิดเห็นหรือคาดเดาเกินจริง", feel:'good', next:'endGood'},
+          {text:"ไม่กล้าเล่าอะไรเพิ่มเพราะกลัวว่าจะทำให้เรื่องใหญ่โต", feel:'bad', next:'conseqHold'}
+        ]},
+      conseqHold:{ type:'conseq', pose:{player:'worried', npc:'sad'}, next:'goodTeacher',
+        text:"การไม่ให้ข้อมูลเพิ่มเติมอาจทำให้ครูช่วยเหลือน้องต้นได้ยากขึ้น ยิ่งผู้ใหญ่มีข้อมูลที่ชัดเจนมากเท่าไหร่ ก็ยิ่งช่วยเหลือได้ตรงจุดและรวดเร็วมากขึ้นเท่านั้น" },
+      altObserve:{ type:'choice', pose:{player:'worried', npc:'sad'},
+        text:"ผ่านไปหลายวัน น้องต้นยังคงมีรอยช้ำใหม่เพิ่มขึ้นเรื่อยๆ และดูหวาดกลัวมากขึ้นทุกครั้งที่ใกล้ถึงเวลาเลิกเรียน คุณจะทำอย่างไรต่อ?",
+        choices:[
+          {text:"ตัดสินใจไปบอกคุณครูทันที ดีกว่าปล่อยให้น้องต้นเผชิญเรื่องนี้ต่อไปคนเดียว", feel:'good', next:'altEnd'},
+          {text:"ยังคงเฝ้าสังเกตต่อไปเรื่อยๆ โดยไม่บอกใคร", feel:'bad', next:'conseqKeepWatching'}
+        ]},
+      conseqKeepWatching:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'altObserve',
+        text:"ยิ่งปล่อยเวลาผ่านไปนานเท่าไหร่ น้องต้นก็ยิ่งตกอยู่ในความเสี่ยงนานขึ้นเท่านั้น เรื่องแบบนี้ไม่ควรรอสังเกตอยู่ฝ่ายเดียว ควรบอกผู้ใหญ่ที่ไว้ใจได้โดยเร็วที่สุด" },
+      altEnd:{ type:'end', endingLabel:'ทางออกอีกเส้นทางหนึ่ง', pose:{player:'happy', npc:'happy'},
+        text:"แม้จะสังเกตอยู่นานกว่าจะตัดสินใจบอกครู แต่เมื่อรู้เรื่องแล้วคุณครูก็รีบประสานงานกับหน่วยงานคุ้มครองเด็กเพื่อช่วยเหลือน้องต้นอย่างเหมาะสมและปลอดภัยทันที ครั้งหน้าจำไว้ว่ายิ่งบอกผู้ใหญ่เร็วเท่าไหร่ก็ยิ่งช่วยได้เร็วเท่านั้น คุณได้ปกป้อง “สิทธิที่จะได้รับการปกป้องคุ้มครอง” ของน้องต้นไว้ได้สำเร็จ!" },
+      endGood:{ type:'end', endingLabel:'ทางออกที่ดีที่สุด', pose:{player:'happy', npc:'happy'},
+        text:"เยี่ยมมาก! คุณครูประสานงานกับหน่วยงานคุ้มครองเด็กเพื่อดูแลน้องต้นอย่างปลอดภัยและเหมาะสมทันที น้องต้นได้รับความช่วยเหลือที่ต้องการ และรู้สึกอุ่นใจที่มีเพื่อนกล้าพูดแทนตอนที่ตัวเองพูดไม่ออก คุณได้ปกป้อง “สิทธิที่จะได้รับการปกป้องคุ้มครอง” ของน้องต้นไว้ได้สำเร็จ! (หากพบเห็นเหตุการณ์คล้ายกันนี้ในชีวิตจริง สามารถแจ้งสายด่วน 1300 ศูนย์ช่วยเหลือสังคมได้ตลอด 24 ชั่วโมง)" }
+    }
+  },
+  {
+    id:'coercion', title:'ค่าคุ้มครองจากรุ่นพี่', subtitle:'สิทธิที่จะได้รับการปกป้องคุ้มครอง (การถูกบังคับข่มขู่)',
+    transition:'พักกลางวันวันศุกร์ หลังโรงอาหาร',
+    nextHint:'เย็นวันศุกร์นั้นเอง... เหตุการณ์สุดท้ายของสัปดาห์กำลังจะเริ่มขึ้นในห้องเรียน',
+    visual:{ sky:['#CDEAF0','#FDEFC7'], ground:['#B5875A','#A3764C'], decor:'window', prop:'books' },
+    npcPalette:{ hair:'#4A2E19', shirt:'var(--c-protection)' },
+    startNode:'start',
+    nodes:{
+      start:{ type:'choice', pose:{player:'worried', npc:'sad'},
+        text:"เพื่อนของคุณชื่อปาล์มเล่าให้ฟังด้วยน้ำเสียงกังวลว่า มีรุ่นพี่กลุ่มหนึ่งคอยดักขอเงินค่าขนมทุกวันหลังเลิกเรียน แล้วขู่ว่าถ้าไม่ให้หรือไปบอกใครจะทำร้าย ปาล์มกลัวมากจนยอมให้เงินไปทุกครั้ง คุณจะแนะนำปาล์มว่าอย่างไร?",
+        choices:[
+          {text:"บอกว่าไม่ควรยอมและไม่ควรเก็บเป็นความลับ ชวนไปแจ้งคุณครูหรือผู้ปกครองทันที", feel:'good', next:'goodTeacher'},
+          {text:"แนะนำให้ลองหลบเลี่ยงเส้นทางที่เจอรุ่นพี่กลุ่มนั้นไปก่อน", feel:'alt', next:'altAvoid'},
+          {text:"บอกว่าให้ยอมจ่ายไปก่อนเพื่อความปลอดภัย ดีกว่าเสี่ยงโดนทำร้าย", feel:'bad', next:'conseqPay'}
+        ]},
+      conseqPay:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'start',
+        text:"การยอมจ่ายไปเรื่อยๆ ไม่ได้ทำให้เรื่องจบ กลุ่มรุ่นพี่กลับมาขอเพิ่มขึ้นเรื่อยๆ และปาล์มก็ยิ่งหวาดกลัวมากขึ้น การข่มขู่บังคับแบบนี้ไม่ใช่เรื่องที่เด็กควรต้องยอมทนหรือแก้ปัญหาด้วยตัวเองเพียงลำพัง" },
+      goodTeacher:{ type:'choice', pose:{player:'thinking', npc:'idle'},
+        text:"คุณครูรับเรื่องอย่างจริงจังและรับปากว่าจะดูแลความปลอดภัยให้ปาล์ม แล้วถามว่า “ครูอยากรู้ว่าเราจะช่วยให้ปาล์มกล้าเดินผ่านจุดนั้นได้อย่างปลอดภัยยังไงดี”",
+        choices:[
+          {text:"เสนอให้ครูจัดคนดูแลบริเวณจุดเสี่ยงช่วงเลิกเรียน พร้อมประสานงานกับผู้ปกครองของทุกฝ่ายที่เกี่ยวข้อง", feel:'good', next:'endGood'},
+          {text:"บอกว่าแค่เตือนกลุ่มรุ่นพี่ปากเปล่าก็คงพอแล้ว", feel:'bad', next:'conseqWarnOnly'}
+        ]},
+      conseqWarnOnly:{ type:'conseq', pose:{player:'worried', npc:'sad'}, next:'goodTeacher',
+        text:"การเตือนเพียงปากเปล่าโดยไม่มีการดูแลต่อเนื่อง อาจทำให้กลุ่มรุ่นพี่ยังคงข่มขู่ต่อไปแบบลับๆ การข่มขู่บังคับต้องได้รับการดูแลอย่างจริงจังและต่อเนื่องจึงจะหยุดได้จริง" },
+      altAvoid:{ type:'choice', pose:{player:'worried', npc:'sad'},
+        text:"ปาล์มลองเปลี่ยนเส้นทางเดินกลับบ้าน แต่กลุ่มรุ่นพี่ก็ยังตามมาดักที่จุดใหม่จนได้ ปาล์มยิ่งเครียดและกลัวมากขึ้น คุณจะทำอย่างไรต่อ?",
+        choices:[
+          {text:"บอกปาล์มว่าการหลบเลี่ยงอย่างเดียวไม่พอ ต้องบอกผู้ใหญ่ให้ช่วยจัดการอย่างจริงจัง", feel:'good', next:'altEnd'},
+          {text:"แนะนำให้ลองหาเส้นทางใหม่ไปเรื่อยๆ ต่อไป", feel:'bad', next:'conseqKeepDodging'}
+        ]},
+      conseqKeepDodging:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'altAvoid',
+        text:"การหลบเลี่ยงไปเรื่อยๆ ไม่ได้แก้ปัญหาที่ต้นเหตุ และทำให้ปาล์มต้องคอยหวาดระแวงอยู่ตลอดเวลา ปัญหาการถูกข่มขู่บังคับต้องอาศัยผู้ใหญ่เข้ามาจัดการอย่างจริงจังจึงจะหยุดได้จริง" },
+      altEnd:{ type:'end', endingLabel:'ทางออกอีกเส้นทางหนึ่ง', pose:{player:'happy', npc:'happy'},
+        text:"แม้จะลองแก้ปัญหาด้วยการหลบเลี่ยงก่อน แต่เมื่อปาล์มตัดสินใจบอกครูในที่สุด โรงเรียนก็รีบเข้ามาดูแลความปลอดภัยและจัดการกับกลุ่มรุ่นพี่อย่างเหมาะสม ปาล์มกลับมาเดินกลับบ้านได้อย่างสบายใจอีกครั้ง คุณได้ปกป้อง “สิทธิที่จะได้รับการปกป้องคุ้มครอง” ของปาล์มไว้ได้สำเร็จ ผ่านอีกเส้นทางหนึ่ง!" },
+      endGood:{ type:'end', endingLabel:'ทางออกที่ดีที่สุด', pose:{player:'happy', npc:'happy'},
+        text:"ยอดเยี่ยม! โรงเรียนจัดการดูแลความปลอดภัยบริเวณจุดเสี่ยงและพูดคุยกับทุกฝ่ายที่เกี่ยวข้องอย่างเหมาะสม กลุ่มรุ่นพี่เลิกพฤติกรรมข่มขู่ ปาล์มเดินกลับบ้านได้อย่างสบายใจโดยไม่ต้องหวาดกลัวอีกต่อไป คุณได้ปกป้อง “สิทธิที่จะได้รับการปกป้องคุ้มครอง” ของปาล์มไว้ได้สำเร็จ!" }
+    }
+  },
+  {
+    id:'participation', title:'เสียงของห้อง ป.5', subtitle:'สิทธิในการมีส่วนร่วม',
+    transition:'เย็นวันศุกร์ ในห้องเรียน ช่วงท้ายสัปดาห์',
+    nextHint:'',
+    visual:{ sky:['#DFF0E0','#FBE8B8'], ground:['#B5875A','#A3764C'], decor:'window-warm', prop:'ballot' },
+    npcPalette:{ hair:'#4A2E19', shirt:'var(--c-participation)' },
+    startNode:'start',
+    nodes:{
+      start:{ type:'choice', pose:{player:'worried', npc:'sad'},
+        text:"ปลายสัปดาห์ คุณครูประกาศว่าห้องของคุณจะไปทัศนศึกษาปลายเทอมนี้ แต่สถานที่ทั้งหมดถูกตัวแทนผู้ปกครองเลือกไว้แล้วโดยไม่ได้ถามความเห็นของนักเรียนเลยสักคน เพื่อนหลายคน รวมถึงพลอย นุ่น และเอก ที่คุณช่วยเหลือมาตลอดสัปดาห์ ต่างบ่นกันเบาๆ ว่าอยากมีส่วนร่วมเสนอความเห็นบ้าง คุณจะทำอย่างไร?",
+        choices:[
+          {text:"รวบรวมความเห็นของเพื่อนๆ อย่างเป็นระบบ แล้วขอเข้าไปเสนอความเห็นกับคุณครูอย่างสุภาพ", feel:'good', next:'goodTeacher'},
+          {text:"บ่นกับเพื่อนๆ ต่อไปเรื่อยๆ ลับหลังคุณครูโดยไม่พูดอะไรตรงๆ", feel:'alt', next:'altComplain'},
+          {text:"เงียบไว้เพราะคิดว่าเด็กไม่มีสิทธิ์ตัดสินใจเรื่องแบบนี้อยู่แล้ว", feel:'bad', next:'conseqSilent'}
+        ]},
+      conseqSilent:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'start',
+        text:"อันที่จริงเด็กทุกคนมีสิทธิที่จะแสดงความคิดเห็นในเรื่องที่ส่งผลกระทบต่อตัวเอง การไม่พูดอะไรเลยทำให้เสียโอกาสที่จะได้มีส่วนร่วมในการตัดสินใจที่เกี่ยวข้องกับตัวเอง" },
+      altComplain:{ type:'choice', pose:{player:'thinking', npc:'sad'},
+        text:"ผ่านไปหลายวัน แผนทัศนศึกษาก็ยังไม่เปลี่ยนแปลง เพื่อนๆ เริ่มบ่นกันหนักขึ้นแต่ก็ยังไม่มีใครกล้าพูดกับครูตรงๆ คุณสังเกตว่าการบ่นกันเองไปเรื่อยๆ ไม่ได้ช่วยอะไร คุณจะทำอย่างไรต่อ?",
+        choices:[
+          {text:"ตัดสินใจรวบรวมความเห็นเพื่อนๆ อย่างเป็นระบบแล้วไปคุยกับครูตรงๆ ทั้งที่เหลือเวลาไม่มากแล้ว", feel:'good', next:'altEnd'},
+          {text:"ปล่อยให้เป็นแบบนี้ต่อไปจนกว่าจะถึงวันทัศนศึกษา", feel:'bad', next:'conseqDrag'}
+        ]},
+      conseqDrag:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'altComplain',
+        text:"ยิ่งปล่อยเวลาผ่านไปนานเท่าไหร่ โอกาสที่จะเปลี่ยนแปลงอะไรได้ก็ยิ่งน้อยลง การบ่นเงียบๆ ต่อไปเรื่อยๆ ไม่ช่วยให้เสียงของเพื่อนๆ ถูกได้ยิน" },
+      goodTeacher:{ type:'choice', pose:{player:'thinking', npc:'idle'},
+        text:"คุณครูรับฟังความเห็นที่เพื่อนๆ ช่วยกันรวบรวมมาอย่างตั้งใจ แล้วพูดว่า “ขอบคุณที่นำเสนอมาอย่างเป็นระบบนะ สัปดาห์นี้เธอช่วยเพื่อนๆ ไว้เยอะมากเลย เราจะเปิดโอกาสให้ทุกคนมีส่วนร่วมยังไงดี?”",
+        choices:[
+          {text:"เสนอให้จัดโหวตในห้องเรียนระหว่างตัวเลือกสถานที่ 2-3 แห่ง เพื่อให้ทุกคนได้ออกเสียง", feel:'good', next:'endGood'},
+          {text:"บอกว่าให้ครูเลือกให้เหมือนเดิมก็ได้ ไม่ต้องเปลี่ยนอะไร", feel:'bad', next:'conseqNoChange'}
+        ]},
+      conseqNoChange:{ type:'conseq', pose:{player:'sad', npc:'sad'}, next:'goodTeacher',
+        text:"ถ้าไม่มีการเปิดโอกาสให้ออกเสียงจริงๆ เพื่อนๆ ก็จะรู้สึกว่าความเห็นของพวกเขาไม่มีความหมาย และจะไม่กล้าเสนอความเห็นอีกในครั้งต่อไป" },
+      altEnd:{ type:'end', endingLabel:'ทางออกอีกเส้นทางหนึ่ง', pose:{player:'happy', npc:'happy'},
+        text:"แม้จะช้าไปหน่อย แต่คุณครูยังใจดีรับฟังและรีบจัดการเปิดโหวตให้ทันก่อนสรุปแผนทัศนศึกษาจริง เพื่อนๆ ในห้องได้เรียนรู้ว่าเสียงของพวกเขามีความหมาย และการพูดออกมาตรงๆ ดีกว่าการบ่นกันเงียบๆ คุณได้ปกป้อง “สิทธิในการมีส่วนร่วม” ของเพื่อนๆ ไว้ได้สำเร็จ ผ่านอีกเส้นทางหนึ่ง!" },
+      endGood:{ type:'end', endingLabel:'ทางออกที่ดีที่สุด', pose:{player:'happy', npc:'happy'},
+        text:"ยอดเยี่ยม! คุณครูจัดให้มีการโหวตเลือกสถานที่ทัศนศึกษาในห้องเรียน ทุกคนได้ออกเสียงและรู้สึกว่าความเห็นของตัวเองมีความหมาย พลอย นุ่น และเอก ต่างพูดเป็นเสียงเดียวกันว่าสัปดาห์นี้เป็นสัปดาห์ที่ดีที่สุดสัปดาห์หนึ่ง เพราะมีเพื่อนแบบคุณคอยดูแลอยู่เสมอ คุณได้ปกป้อง “สิทธิในการมีส่วนร่วม” ของเพื่อนๆ ทั้งห้องไว้ได้สำเร็จ!" }
+    }
+  }
+];
+
+/* =================== ENGINE =================== */
+let state = { chapterIndex:0, transitionShown:false, currentNodeId:null, score:0, attempts:{}, scoreLog:[] };
+
+function goTo(screenId){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-'+screenId).classList.add('active');
+}
+function currentChapter(){ return CHAPTERS[state.chapterIndex]; }
+
+function renderTimeline(){
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = '';
+  CHAPTERS.forEach((c, i) => {
+    const seg = document.createElement('div');
+    seg.className = 'seg' + (i < state.chapterIndex ? ' done' : (i === state.chapterIndex ? ' active' : ''));
+    seg.style.setProperty('--seg-color', ACCENTS[c.id]);
+    const bar = document.createElement('i'); seg.appendChild(bar);
+    tl.appendChild(seg);
+  });
+  document.getElementById('chapterLabel').textContent = `บทที่ ${state.chapterIndex+1}/${CHAPTERS.length} · ${currentChapter().subtitle}`;
+  document.getElementById('chBadge').textContent = `บทที่ ${state.chapterIndex+1}`;
+}
+
+function startChapter(index){
+  state.chapterIndex = index;
+  state.transitionShown = false;
+  document.getElementById('npcWrap').style.display = '';
+  document.getElementById('npcWrap').innerHTML = characterSVG('npc', currentChapter().npcPalette);
+  renderTimeline();
+  renderSceneStage(currentChapter());
+  renderNode(currentChapter().startNode);
+}
+
+function renderNode(nodeId){
+  const c = currentChapter();
+  const node = c.nodes[nodeId];
+  applyStagePose(node.pose);
+
+  if(node.type === 'choice'){
+    state.currentNodeId = nodeId;
+    moveStage('stageSlot-story');
+    const tag = document.getElementById('storyTag');
+    tag.textContent = c.title; tag.style.background = ACCENTS[c.id];
+    document.getElementById('storyTransition').textContent = state.transitionShown ? '' : c.transition;
+    state.transitionShown = true;
+    document.getElementById('storyText').innerHTML = `<p>${node.text}</p>`;
+    const choicesEl = document.getElementById('storyChoices');
+    choicesEl.innerHTML = '';
+    const letters = ['ก','ข','ค'];
+    const shuffled = shuffle(node.choices);
+    shuffled.forEach((choice,i)=>{
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.innerHTML = `<span class="choice-letter">${letters[i]}</span>${choice.text}`;
+      btn.onclick = () => handleChoice(choice);
+      choicesEl.appendChild(btn);
+    });
+    goTo('story');
+
+  } else if(node.type === 'conseq'){
+    moveStage('stageSlot-conseq');
+    const tag = document.getElementById('conseqTag');
+    tag.textContent = c.title; tag.style.background = ACCENTS[c.id];
+    document.getElementById('conseqText').textContent = node.text;
+    document.getElementById('conseqAdvice').textContent = 'ลองกลับไปคิดดูอีกครั้งว่ามีทางเลือกไหนที่จะช่วยแก้ปัญหาได้ตรงจุดกว่านี้';
+    document.getElementById('conseqBtn').onclick = () => renderNode(node.next);
+    goTo('conseq');
+
+  } else if(node.type === 'end'){
+    moveStage('stageSlot-goodend');
+    const tag = document.getElementById('goodTag');
+    tag.textContent = c.title; tag.style.background = ACCENTS[c.id];
+    document.getElementById('endingTag').textContent = node.endingLabel;
+    document.getElementById('goodText').textContent = node.text;
+    document.getElementById('nextHint').textContent = c.nextHint;
+    const isLast = state.chapterIndex === CHAPTERS.length - 1;
+    const continueBtn = document.getElementById('continueBtn');
+    continueBtn.textContent = isLast ? 'ดูสรุปทั้งสัปดาห์' : 'ไปต่อ';
+    continueBtn.onclick = () => { isLast ? (renderScoreSummary(), goTo('cert')) : startChapter(state.chapterIndex+1); };
+    goTo('goodend');
+    playFanfare();
+    setTimeout(spawnConfetti, 120);
+  }
+}
+
+function awardPoints(chapter, nodeId){
+  const key = chapter.id + '|' + nodeId;
+  state.attempts[key] = (state.attempts[key] || 0) + 1;
+  const n = state.attempts[key];
+  const pts = n === 1 ? 3 : (n === 2 ? 2 : 1);
+  state.score += pts;
+  state.scoreLog.push({ chapter: chapter.title, points: pts, attempt: n });
+  updateScoreBadge();
+  return pts;
+}
+function recordAttempt(chapter, nodeId){
+  const key = chapter.id + '|' + nodeId;
+  state.attempts[key] = (state.attempts[key] || 0) + 1;
+}
+function updateScoreBadge(){
+  const el = document.getElementById('scoreBadge');
+  if(el) el.textContent = `⭐ ${state.score} คะแนน`;
+}
+
+function handleChoice(choice){
+  const c = currentChapter();
+  const nodeId = state.currentNodeId;
+  if(choice.feel === 'good'){
+    awardPoints(c, nodeId);
+    playGood();
+    setPose('protagonist','happy');
+    spawnSparkles();
+    setTimeout(()=> renderNode(choice.next), 420);
+  } else if(choice.feel === 'bad'){
+    recordAttempt(c, nodeId);
+    playBad();
+    setPose('protagonist','worried');
+    triggerFlash();
+    setTimeout(()=> renderNode(choice.next), 380);
+  } else {
+    awardPoints(c, nodeId);
+    playGood();
+    setPose('protagonist','thinking');
+    setTimeout(()=> renderNode(choice.next), 320);
+  }
+}
+
+function renderScoreSummary(){
+  document.getElementById('certName').textContent = playerName ? `${playerName} — ผู้พิทักษ์สิทธิเด็ก` : 'ผู้พิทักษ์สิทธิเด็ก';
+  const totalQuestions = state.scoreLog.length;
+  const maxPossible = totalQuestions * 3;
+  document.getElementById('scoreTotalLine').textContent = `คะแนนรวม: ${state.score} / ${maxPossible} คะแนน`;
+
+  let tierMsg = '';
+  const pct = maxPossible > 0 ? (state.score / maxPossible) * 100 : 0;
+  if(pct >= 90) tierMsg = '🏆 ระดับยอดเยี่ยม — ตัดสินใจได้เฉียบคมมากตั้งแต่ครั้งแรกแทบทุกเหตุการณ์!';
+  else if(pct >= 70) tierMsg = '🌟 ระดับดีมาก — ตัดสินใจได้ดีตลอดทั้งสัปดาห์';
+  else if(pct >= 50) tierMsg = '👍 ระดับดี — ผ่านไปได้ด้วยดี ลองเล่นใหม่เพื่อเก็บคะแนนเต็มดูก็ได้';
+  else tierMsg = '💪 ลองอีกครั้งเพื่อฝึกตัดสินใจให้แม่นยำขึ้นได้นะ';
+  document.getElementById('scoreTier').textContent = tierMsg;
+
+  const byChapter = {};
+  state.scoreLog.forEach(entry => {
+    byChapter[entry.chapter] = (byChapter[entry.chapter] || 0) + entry.points;
+  });
+  const breakdown = document.getElementById('scoreBreakdown');
+  breakdown.innerHTML = '';
+  Object.keys(byChapter).forEach(title => {
+    const row = document.createElement('div');
+    row.className = 'score-row';
+    row.innerHTML = `<span>${title}</span><b>${byChapter[title]} คะแนน</b>`;
+    breakdown.appendChild(row);
+  });
+}
+
+function resetGame(){
+  state.chapterIndex = 0; state.transitionShown = false;
+  state.score = 0; state.attempts = {}; state.scoreLog = []; state.currentNodeId = null;
+  updateScoreBadge();
+  document.getElementById('npcWrap').style.display = '';
+  openLobby();
+}
+
+buildStage();
+renderSceneStage(CHAPTERS[0]);
+document.getElementById('npcWrap').innerHTML = characterSVG('npc', CHAPTERS[0].npcPalette);
+applyStagePose({player:'idle', npc:'idle'});
+updateScoreBadge();
+openLobby();
+</script>
+</body>
+</html>
